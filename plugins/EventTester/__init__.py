@@ -9,12 +9,10 @@ class Plugin(BasePlugin):
 
     def __init__(self, bot):
         super(Plugin, self).__init__(bot)
-        print("Registering event")
         self.bot = bot
-        bot._EventManager.register_handler(EventTypes.ChannelMessage, self.channel_message)
+        bot.register_handler(EventTypes.ChannelMessage, self.channel_message)
         for eventtype in EventTypes:
-            bot._EventManager.register_handler(eventtype, self.event_test)
-        print("Event registered")
+            bot.register_handler(eventtype, self.event_test)
 
     @asyncio.coroutine
     def channel_message(self, args):
