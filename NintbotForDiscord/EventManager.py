@@ -1,4 +1,5 @@
 from .Enums import EventTypes
+import asyncio
 __author__ = 'Riley Flynn (nint8835)'
 
 
@@ -16,4 +17,5 @@ class EventManager:
             if handler["type"] == event_type:
                 new_args = kwargs
                 new_args["bot"] = self._bot
-                handler["handler"](new_args)
+                new_args["event_type"] = event_type
+                asyncio.Task(handler["handler"](new_args))
