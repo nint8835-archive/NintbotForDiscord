@@ -15,8 +15,10 @@ class Bot(discord.Client):
         self._EventManager.register_handler(EventTypes.Message, self.log_message)
         self._PluginLoader = PluginLoader(self)
         self._PluginLoader.load_plugins()
-        print(self._EventManager._handlers)
         self.run(config["email"], config["password"])
+
+    def register_handler(self, eventtype: EventTypes, handler):
+        self._EventManager.register_handler(eventtype, handler)
 
     @asyncio.coroutine
     def on_message(self, message: discord.Message):
