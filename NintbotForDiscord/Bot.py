@@ -12,9 +12,12 @@ class Bot(discord.Client):
         super(Bot, self).__init__(loop = loop)
         self._config = config
 
+        NintbotForDiscord.EventManager.update_bot(self)
+
         self._PluginLoader = PluginLoader(self)
         self._PluginLoader.load_plugins()
-        print(NintbotForDiscord.EventManager.handlers)
+
+
         self.run(config["email"], config["password"])
 
     def register_handler(self, eventtype: EventTypes, handler):
