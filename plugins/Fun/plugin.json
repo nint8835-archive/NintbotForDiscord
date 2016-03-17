@@ -1,0 +1,7 @@
+{
+  "plugin_name": "Random Fun Stuff",
+  "plugin_developer": "nint8835",
+  "plugin_version": "1.6",
+  "module_name": "Fun",
+  "main_file": "__init__.py"
+}

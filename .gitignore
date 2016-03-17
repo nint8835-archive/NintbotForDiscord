@@ -1,3 +1,9 @@
 .idea/
 config.json
 *.pyc
+pycallgraph.png
+plugins/CustomCommands/commands.json
+plugins/DiscordMarkov/strings.json
+plugins/PrivateChannel/channels.json
+plugins/Project Skynet/learned_data.json
+plugins/Quotes/quotes.json

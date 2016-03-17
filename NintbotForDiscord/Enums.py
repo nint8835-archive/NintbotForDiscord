@@ -17,6 +17,9 @@ class EventTypes(Enum):
     PrivateMessageDeleted = "private_message_deleted"
     PrivateMessageEdited  = "private_message_edited"
 
+    # Commands
+    CommandSent = "command_sent"
+
     # Channels
     ChannelDeleted = "channel_deleted"
     ChannelCreated = "channel_created"

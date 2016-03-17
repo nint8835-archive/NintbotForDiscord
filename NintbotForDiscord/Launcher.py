@@ -31,5 +31,3 @@ class FileBotLauncher(StreamBotLauncher):
         if os.path.exists(path):
             with open(path) as f:
                 super(FileBotLauncher, self).__init__(f)
-
-
