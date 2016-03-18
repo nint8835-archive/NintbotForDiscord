@@ -7,12 +7,13 @@ from .EventManager import EventManager
 from .PluginManager import PluginManager
 from .Enums import EventTypes
 from .CommandRegistry import CommandRegistry
+from .TokenClient import TokenClient
 import logging
 
 __author__ = 'Riley Flynn (nint8835)'
 
 
-class Bot(discord.Client):
+class Bot(TokenClient):
     VERSION = "03.13.2016.2"
 
     def __init__(self, config: dict, loop: asyncio.BaseEventLoop = None):
@@ -43,7 +44,7 @@ class Bot(discord.Client):
         self.logger.debug("Starting bot...")
         logging.getLogger("discord").setLevel(logging.ERROR)
         logging.getLogger("websockets").setLevel(logging.ERROR)
-        self.run(config["email"], config["password"])
+        self.run(config["token"])
 
     def register_handler(self, eventtype: EventTypes, handler, plugin: BasePlugin):
         self.EventManager.register_handler(eventtype, handler, plugin)
