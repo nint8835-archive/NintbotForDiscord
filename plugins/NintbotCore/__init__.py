@@ -6,9 +6,12 @@ from NintbotForDiscord.Permissions.Special import Owner
 from NintbotForDiscord.Permissions.Text import ManageMessages
 from discord.errors import HTTPException, NotFound
 from discord import ChannelType, Status, Game
+
+import math
 import os
 import json
 import re
+import time
 
 __author__ = 'Riley Flynn (nint8835)'
 
@@ -21,6 +24,7 @@ Currently connected to {} servers, with {} channels ({} text, {} voice) and {} u
 class Plugin(BasePlugin):
     def __init__(self, bot_instance, plugin_data, folder):
         super(Plugin, self).__init__(bot_instance, plugin_data, folder)
+        self.started_time = 0
         self.admin = create_match_any_permission_group([Owner(self.bot), ManageMessages()])
         self.bot.register_handler(EventTypes.CommandSent, self.on_command, self)
         self.bot.register_handler(EventTypes.OnReady, self.on_ready, self)
@@ -59,7 +63,11 @@ class Plugin(BasePlugin):
                                                   plugin_data)
         self.bot.CommandRegistry.register_command("stop",
                                                   "Stops the bot.",
-                                                  self.admin,
+                                                  Owner(self.bot),
+                                                  plugin_data)
+        self.bot.CommandRegistry.register_command("uptime",
+                                                  "Displays the bot's uptime.",
+                                                  Permission(),
                                                   plugin_data)
 
         with open(os.path.join(folder, "config.json")) as f:
@@ -142,8 +150,11 @@ class Plugin(BasePlugin):
         elif args["command_args"][0] == "regexpurge":
             await self.command_regexpurge(args)
 
-        elif args["command_args"][0] == "stop" and self.admin.has_permission(args["author"]):
+        elif args["command_args"][0] == "stop" and Owner(self.bot).has_permission(args["author"]):
             await self.bot.logout()
+
+        elif args["command_args"][0] == "uptime":
+            await self.command_uptime(args)
 
     async def command_invite(self, args):
         print(args["command_args"][1])
@@ -230,5 +241,19 @@ class Plugin(BasePlugin):
             if message.author.id == self.bot.user.id:
                 await self.bot.delete_message(message)
 
+    async def command_uptime(self, args):
+        time_diff = time.time() - self.started_time
+        minutes, seconds = divmod(time_diff, 60)
+        minutes = int(math.floor(minutes))
+        seconds = int(math.floor(seconds))
+        hours, minutes = divmod(minutes, 60)
+        hours = int(math.floor(hours))
+        minutes = int(math.floor(minutes))
+        days, hours = divmod(hours, 24)
+        hours = int(math.floor(hours))
+        days = int(math.floor(days))
+        await self.bot.send_message(args["channel"], "The bot has been up for {} days, {} hours, {} minutes, and {} seconds.".format(days, hours, minutes, seconds))
+
     async def on_ready(self, args):
         await self.bot.change_status(game = Game(name = "Nintbot V{}".format(self.bot.VERSION)))
+        self.started_time = time.time()
