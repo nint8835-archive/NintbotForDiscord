@@ -7,6 +7,7 @@ from NintbotForDiscord.Permissions.Text import ManageMessages
 from discord.errors import HTTPException, NotFound
 from discord import ChannelType, Status, Game
 
+import textwrap
 import math
 import os
 import json
@@ -67,6 +68,10 @@ class Plugin(BasePlugin):
                                                   plugin_data)
         self.bot.CommandRegistry.register_command("uptime",
                                                   "Displays the bot's uptime.",
+                                                  Permission(),
+                                                  plugin_data)
+        self.bot.CommandRegistry.register_command("commands",
+                                                  "Displays what commands you have access to.",
                                                   Permission(),
                                                   plugin_data)
 
@@ -155,6 +160,9 @@ class Plugin(BasePlugin):
 
         elif args["command_args"][0] == "uptime":
             await self.command_uptime(args)
+
+        elif args["command_args"][0] == "commands":
+            await self.command_commands(args)
 
     async def command_invite(self, args):
         print(args["command_args"][1])
@@ -253,6 +261,18 @@ class Plugin(BasePlugin):
         hours = int(math.floor(hours))
         days = int(math.floor(days))
         await self.bot.send_message(args["channel"], "The bot has been up for {} days, {} hours, {} minutes, and {} seconds.".format(days, hours, minutes, seconds))
+
+    async def command_commands(self, args):
+        message_str = ""
+        for command in self.bot.CommandRegistry.get_available_commands_for_user(args["author"]):
+            if message_str == "":
+                message_str += "```"
+            if len(message_str)>=1700:
+                await self.bot.send_message(args["channel"], message_str + "```")
+                message_str = "```"
+            message_str += "{}{}: {}\n".format(self.bot.config["command_prefix"], command["command"], command["description"])
+        if message_str != "":
+            await self.bot.send_message(args["channel"], message_str + "```")
 
     async def on_ready(self, args):
         await self.bot.change_status(game = Game(name = "Nintbot V{}".format(self.bot.VERSION)))

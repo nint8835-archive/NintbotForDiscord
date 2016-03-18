@@ -24,12 +24,12 @@ class Plugin(BasePlugin):
     def refresh_custom_registry(self):
         self.bot.CommandRegistry.unregister_all_commands_for_plugin(self.plugin_data)
         self.bot.CommandRegistry.register_command("customcommand",
-                                                  "View and manage quotes.",
+                                                  "Manage custom commands.",
                                                   self.manage_perm,
                                                   self.plugin_data)
         for command in self.commands.select(SelectionMode.ALL).rows:
             self.bot.CommandRegistry.register_command(command["command"],
-                                                      command["message"],
+                                                      "A custom command from the Custom Commands plugin.",
                                                       Permission(),
                                                       self.plugin_data)
 
