@@ -7,7 +7,6 @@ from NintbotForDiscord.Permissions.Text import ManageMessages
 from discord.errors import HTTPException, NotFound
 from discord import ChannelType, Status, Game
 
-import textwrap
 import math
 import os
 import json

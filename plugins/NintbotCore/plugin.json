@@ -1,7 +1,7 @@
 {
   "plugin_name": "Nintbot Core",
   "plugin_developer": "nint8835",
-  "plugin_version": "1.21",
+  "plugin_version": "1.21.1",
   "module_name": "NintbotCore",
   "main_file": "__init__.py"
 }
