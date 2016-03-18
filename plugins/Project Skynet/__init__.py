@@ -32,7 +32,7 @@ class Plugin(BasePlugin):
         words = message.split(" ")
         portions = []
         for i in range(len(words) - 1):
-            portions.append([words[i], words[i + 1]])
+            portions.append([words[i].lower(), words[i + 1].lower()])
         return portions
 
     def train(self, message: str, answer: bool):
