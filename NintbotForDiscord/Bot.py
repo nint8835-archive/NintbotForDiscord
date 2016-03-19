@@ -14,7 +14,7 @@ __author__ = 'Riley Flynn (nint8835)'
 
 
 class Bot(TokenClient):
-    VERSION = "03.18.2016.1"
+    VERSION = "03.18.2016.2"
 
     def __init__(self, config: dict, loop: asyncio.BaseEventLoop = None):
         super(Bot, self).__init__(loop = loop)
@@ -44,6 +44,7 @@ class Bot(TokenClient):
         self.logger.debug("Starting bot...")
         logging.getLogger("discord").setLevel(logging.ERROR)
         logging.getLogger("websockets").setLevel(logging.ERROR)
+        self.email = self.config["email"]
         self.run(config["token"])
 
     def register_handler(self, eventtype: EventTypes, handler, plugin: BasePlugin):
