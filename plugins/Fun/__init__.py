@@ -33,7 +33,6 @@ class Plugin(BasePlugin):
     def __init__(self, bot_instance, plugin_data, folder):
         super(Plugin, self).__init__(bot_instance, plugin_data, folder)
         self.praw = praw.Reddit(user_agent = "Fun plugin V{} for NintbotForDiscord - Developed by /u/nint8835".format(self.plugin_data["plugin_version"]))
-        self.praw.get_random_subreddit(True)# Needed to set the over18 flag. Probably gonna regret this.
         self.role_color_perm = create_match_any_permission_group([ManageRoles(), Owner(self.bot)])
         self.bot.register_handler(EventTypes.CommandSent, self.on_command, self)
         self.bot.CommandRegistry.register_command("weather",
