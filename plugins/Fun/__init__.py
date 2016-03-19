@@ -33,6 +33,7 @@ class Plugin(BasePlugin):
     def __init__(self, bot_instance, plugin_data, folder):
         super(Plugin, self).__init__(bot_instance, plugin_data, folder)
         self.praw = praw.Reddit(user_agent = "Fun plugin V{} for NintbotForDiscord - Developed by /u/nint8835".format(self.plugin_data["plugin_version"]))
+        self.praw.get_random_subreddit(True)# Needed to set the over18 flag. Probably gonna regret this.
         self.role_color_perm = create_match_any_permission_group([ManageRoles(), Owner(self.bot)])
         self.bot.register_handler(EventTypes.CommandSent, self.on_command, self)
         self.bot.CommandRegistry.register_command("weather",
@@ -176,8 +177,11 @@ class Plugin(BasePlugin):
         await self.bot.send_message(args["channel"], "```Top games:\n{}```".format("\n".join(["{} - {} users".format(i["game"], i["count"]) for i in sorted_games])))
 
     async def command_reddit(self, args):
-        submission = self.praw.get_random_submission(args["command_args"][1])
-        if not submission.is_self:
-            await self.bot.send_message(args["channel"], submission.url)
-        else:
-            await self.bot.send_message(args["channel"], "{}\n{}".format(submission.title, submission.selftext))
+        try:
+            submission = self.praw.get_random_submission(args["command_args"][1])
+            if not submission.is_self:
+                await self.bot.send_message(args["channel"], submission.url)
+            else:
+                await self.bot.send_message(args["channel"], "{}\n{}".format(submission.title, submission.selftext))
+        except:
+            traceback.print_exc(5)
