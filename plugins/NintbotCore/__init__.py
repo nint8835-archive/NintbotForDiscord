@@ -20,6 +20,13 @@ Developed by nint8835
 Currently connected to {} servers, with {} channels ({} text, {} voice) and {} users ({} of which are online).
 {} plugins currently installed.```"""
 
+USER_INFO_STRING = """```Username: {}
+ID: {}
+Discriminator: {}
+Avatar: {}
+Created: {}
+```"""
+
 
 class Plugin(BasePlugin):
     def __init__(self, bot_instance, plugin_data, folder):
@@ -71,6 +78,10 @@ class Plugin(BasePlugin):
                                                   plugin_data)
         self.bot.CommandRegistry.register_command("commands",
                                                   "Displays what commands you have access to.",
+                                                  Permission(),
+                                                  plugin_data)
+        self.bot.CommandRegistry.register_command("userinfo",
+                                                  "Displays info about a certain user.",
                                                   Permission(),
                                                   plugin_data)
 
@@ -162,6 +173,9 @@ class Plugin(BasePlugin):
 
         elif args["command_args"][0] == "commands":
             await self.command_commands(args)
+
+        elif args["command_args"][0] == "userinfo" and len(args["command_args"]) >= 2:
+            await self.command_userinfo(args)
 
     async def command_invite(self, args):
         print(args["command_args"][1])
@@ -272,6 +286,15 @@ class Plugin(BasePlugin):
             message_str += "{}{}: {}\n".format(self.bot.config["command_prefix"], command["command"], command["description"])
         if message_str != "":
             await self.bot.send_message(args["channel"], message_str + "```")
+
+    async def command_userinfo(self, args):
+        users = [user for user in args["channel"].server.members if user.name == " ".join(args["command_args"][1:])]
+        for user in users:
+            await self.bot.send_message(args["channel"], USER_INFO_STRING.format(user.name,
+                                                                                 user.id,
+                                                                                 user.discriminator,
+                                                                                 user.avatar_url,
+                                                                                 user.created_at))
 
     async def on_ready(self, args):
         await self.bot.change_status(game = Game(name = "Nintbot V{}".format(self.bot.VERSION)))
