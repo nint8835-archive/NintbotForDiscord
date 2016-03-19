@@ -30,7 +30,7 @@ class Plugin(BasePlugin):
         if args["command_args"][0] == "meme":
             submission = self.praw.get_random_submission("+".join(subreddits))
             if not submission.is_self:
-                await self.bot.send_message(args["channel"], submission.url.replace(".gif", ".gifv"))
+                await self.bot.send_message(args["channel"], submission.url.replace(".gifv", ".gif"))
             else:
                 await self.bot.send_message(args["channel"], "{}\n{}".format(submission.title, submission.selftext))
 

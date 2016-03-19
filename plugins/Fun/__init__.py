@@ -179,7 +179,7 @@ class Plugin(BasePlugin):
         try:
             submission = self.praw.get_random_submission(args["command_args"][1])
             if not submission.is_self:
-                await self.bot.send_message(args["channel"], submission.url.replace(".gif", ".gifv"))
+                await self.bot.send_message(args["channel"], submission.url.replace(".gifv", ".gif"))
             else:
                 await self.bot.send_message(args["channel"], "{}\n{}".format(submission.title, submission.selftext))
         except:
