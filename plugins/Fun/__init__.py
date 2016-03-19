@@ -5,7 +5,7 @@ import random
 
 import requests
 
-from discord import Colour
+from discord import Colour, Game
 
 from NintbotForDiscord.Enums import EventTypes
 from NintbotForDiscord.Permissions import Permission, create_match_any_permission_group
@@ -53,6 +53,11 @@ class Plugin(BasePlugin):
                                                   "Changes the bot's username.",
                                                   Owner(self.bot),
                                                   plugin_data)
+        self.bot.CommandRegistry.register_command("setgame",
+                                                  "Sets the game the bot is displayed as playing.",
+                                                  Permission(),
+                                                  plugin_data)
+
         with open(os.path.join(folder, "config.json")) as f:
             self.config = json.load(f)
 
@@ -71,6 +76,8 @@ class Plugin(BasePlugin):
             await self.command_role_color(args)
         if args["command_args"][0] == "name" and len(args["command_args"]) >= 2 and Owner(self.bot).has_permission(args["author"]):
             await self.command_name(args)
+        if args["command_args"][0] == "setgame" and len(args["command_args"]) >= 2:
+            await self.command_setgame(args)
 
     async def command_weather(self, args):
         location = " ".join(args["command_args"][1:]).replace(" ", "%20")
@@ -127,3 +134,7 @@ class Plugin(BasePlugin):
             await self.bot.edit_profile(self.bot.config["password"], username = new_name)
         except:
             traceback.print_exc(5)
+
+    async def command_setgame(self, args):
+        game = " ".join(args["command_args"][1:])
+        await self.bot.change_status(game = Game(name = game))
