@@ -32,5 +32,5 @@ class Plugin(BasePlugin):
             if not submission.is_self:
                 await self.bot.send_message(args["channel"], submission.url)
             else:
-                await self.bot.send_message(args["channel"], "```{}\n{}```".format(submission.title, submission.selftext))
+                await self.bot.send_message(args["channel"], "{}\n{}".format(submission.title, submission.selftext))
 
