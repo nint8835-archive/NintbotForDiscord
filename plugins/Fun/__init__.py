@@ -1,4 +1,5 @@
 import traceback
+from operator import itemgetter
 
 import aiohttp
 import random
@@ -16,6 +17,13 @@ import os
 import json
 
 __author__ = 'Riley Flynn (nint8835)'
+
+
+def get_index(list, key, value):
+    for index, item in enumerate(list):
+        if item[key] == value:
+            return index
+    return None
 
 
 # noinspection PyBroadException
@@ -57,6 +65,10 @@ class Plugin(BasePlugin):
                                                   "Sets the game the bot is displayed as playing.",
                                                   Permission(),
                                                   plugin_data)
+        self.bot.CommandRegistry.register_command("topgames",
+                                                  "Displays the games that are currently being played by the most users.",
+                                                  Permission(),
+                                                  plugin_data)
 
         with open(os.path.join(folder, "config.json")) as f:
             self.config = json.load(f)
@@ -78,6 +90,8 @@ class Plugin(BasePlugin):
             await self.command_name(args)
         if args["command_args"][0] == "setgame" and len(args["command_args"]) >= 2:
             await self.command_setgame(args)
+        if args["command_args"][0] == "topgames":
+            await self.command_topgames(args)
 
     async def command_weather(self, args):
         location = " ".join(args["command_args"][1:]).replace(" ", "%20")
@@ -138,3 +152,17 @@ class Plugin(BasePlugin):
     async def command_setgame(self, args):
         game = " ".join(args["command_args"][1:])
         await self.bot.change_status(game = Game(name = game))
+
+    async def command_topgames(self, args):
+        games = []
+        for user in self.bot.PluginManager.get_plugin_instance_by_name("Nintbot Core").get_all_users():
+            try:
+                if user.game is not None:
+                    if not any([i["game"] == user.game.name for i in games]):
+                        games.append({"game": user.game.name, "count": 1})
+                    else:
+                        games[get_index(games, "game", user.game.name)]["count"] += 1
+            except:
+                traceback.print_exc(5)
+        sorted_games = sorted(games, key=itemgetter("count"), reverse=True)
+        await self.bot.send_message(args["channel"], "```Top games:\n{}```".format("\n".join(["{} - {} users".format(i["game"], i["count"]) for i in sorted_games])))
