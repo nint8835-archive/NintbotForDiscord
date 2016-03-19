@@ -3,6 +3,7 @@ from operator import itemgetter
 
 import aiohttp
 import random
+import praw
 
 import requests
 
@@ -31,6 +32,7 @@ class Plugin(BasePlugin):
 
     def __init__(self, bot_instance, plugin_data, folder):
         super(Plugin, self).__init__(bot_instance, plugin_data, folder)
+        self.praw = praw.Reddit(user_agent = "Fun plugin V{} for NintbotForDiscord - Developed by /u/nint8835".format(self.plugin_data["plugin_version"]))
         self.role_color_perm = create_match_any_permission_group([ManageRoles(), Owner(self.bot)])
         self.bot.register_handler(EventTypes.CommandSent, self.on_command, self)
         self.bot.CommandRegistry.register_command("weather",
@@ -69,6 +71,10 @@ class Plugin(BasePlugin):
                                                   "Displays the games that are currently being played by the most users.",
                                                   Permission(),
                                                   plugin_data)
+        self.bot.CommandRegistry.register_command("reddit",
+                                                  "Posts a random link from a subreddit.",
+                                                  Permission(),
+                                                  plugin_data)
 
         with open(os.path.join(folder, "config.json")) as f:
             self.config = json.load(f)
@@ -92,6 +98,8 @@ class Plugin(BasePlugin):
             await self.command_setgame(args)
         if args["command_args"][0] == "topgames":
             await self.command_topgames(args)
+        if args["command_args"][0] == "reddit" and len(args["command_args"]) == 2:
+            await self.command_reddit(args)
 
     async def command_weather(self, args):
         location = " ".join(args["command_args"][1:]).replace(" ", "%20")
@@ -166,3 +174,10 @@ class Plugin(BasePlugin):
                 traceback.print_exc(5)
         sorted_games = sorted(games, key=itemgetter("count"), reverse=True)
         await self.bot.send_message(args["channel"], "```Top games:\n{}```".format("\n".join(["{} - {} users".format(i["game"], i["count"]) for i in sorted_games])))
+
+    async def command_reddit(self, args):
+        submission = self.praw.get_random_submission(args["command_args"][1])
+        if not submission.is_self:
+            await self.bot.send_message(args["channel"], submission.url)
+        else:
+            await self.bot.send_message(args["channel"], "{}\n{}".format(submission.title, submission.selftext))
