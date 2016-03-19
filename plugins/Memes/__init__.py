@@ -11,7 +11,8 @@ subreddits = ["memes",
               "dankmemes",
               "funnymeme",
               "meme",
-              "terriblefacebookmemes"]
+              "terriblefacebookmemes",
+              "emojipasta"]
 
 
 class Plugin(BasePlugin):
@@ -28,4 +29,8 @@ class Plugin(BasePlugin):
     async def on_command(self, args):
         if args["command_args"][0] == "meme":
             submission = self.praw.get_random_submission("+".join(subreddits))
-            await self.bot.send_message(args["channel"], submission.url)
+            if not submission.is_self:
+                await self.bot.send_message(args["channel"], submission.url)
+            else:
+                await self.bot.send_message(args["channel"], "```{}\n{}```".format(submission.title, submission.selftext))
+
