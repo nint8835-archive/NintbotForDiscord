@@ -141,10 +141,8 @@ class Plugin(BasePlugin):
         return roles
 
     async def on_command(self, args):
-        if args["command_args"][0] == "invite":
-            await self.command_invite(args)
 
-        elif args["command_args"][0] == "info":
+        if args["command_args"][0] == "info":
             await self.command_info(args)
 
         elif args["command_args"][0] == "debug":
@@ -176,21 +174,6 @@ class Plugin(BasePlugin):
 
         elif args["command_args"][0] == "userinfo" and len(args["command_args"]) >= 2:
             await self.command_userinfo(args)
-
-    async def command_invite(self, args):
-        print(args["command_args"][1])
-        if args["command_args"][1].startswith("https://discord.gg/"):
-            try:
-                await self.bot.accept_invite(args["command_args"][1])
-            except (NotFound, HTTPException):
-                if args["channel"].is_private:
-                    if self.config["send_error_feedback_to_private_messages"]:
-                        await self.bot.send_message(args["channel"],
-                                                    ":no_entry_sign: The invite link you provided is invalid.")
-                else:
-                    if self.config["send_error_feedback_to_channels"]:
-                        await self.bot.send_message(args["channel"],
-                                                    ":no_entry_sign: The invite link you provided is invalid.")
 
     async def command_info(self, args):
         await self.bot.send_message(args["channel"],
