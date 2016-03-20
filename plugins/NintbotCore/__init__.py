@@ -84,6 +84,10 @@ class Plugin(BasePlugin):
                                                   "Displays info about a certain user.",
                                                   Permission(),
                                                   plugin_data)
+        self.bot.CommandRegistry.register_command("invitebot",
+                                                  "Posts the invite link for the bot.",
+                                                  Permission(),
+                                                  plugin_data)
 
         with open(os.path.join(folder, "config.json")) as f:
             self.config = json.load(f)
@@ -174,6 +178,9 @@ class Plugin(BasePlugin):
 
         elif args["command_args"][0] == "userinfo" and len(args["command_args"]) >= 2:
             await self.command_userinfo(args)
+
+        elif args["command_args"][0] == "invitebot":
+            await self.bot.send_message(args["channel"], "Invite the bot to your server using the following link: https://discordapp.com/oauth2/authorize?&client_id={}&scope=bot".format(self.bot.config["app_id"]))
 
     async def command_info(self, args):
         await self.bot.send_message(args["channel"],
