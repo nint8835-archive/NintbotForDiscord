@@ -18,6 +18,7 @@ class EventManager:
     async def event_handle_loop(self):
         while not self._bot.is_closed:
             handler = await self.queue.get()
+            self._bot.logger.debug("{} items in event queue.".format(self.queue.qsize()))
             try:
                 await asyncio.wait_for(handler["handler"](handler["args"]), timeout = self._bot.config["event_timeout"], loop = self.loop)
             except asyncio.TimeoutError:
