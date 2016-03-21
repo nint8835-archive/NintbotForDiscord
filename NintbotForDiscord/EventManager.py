@@ -28,15 +28,15 @@ class EventManager:
         self._handlers.append({"type": event_type, "handler": event_handler, "plugin": plugin})
 
     async def dispatch_event(self, event_type: EventTypes, **kwargs):
+        new_args = kwargs
+        new_args["bot"] = self._bot
+        new_args["event_type"] = event_type
         for handler in self._handlers:
             if handler["type"] == event_type:
-                new_args = kwargs
-                new_args["bot"] = self._bot
-                new_args["event_type"] = event_type
                 try:
                     await self.queue.put({"handler": handler["handler"], "type": event_type, "args": new_args, "plugin": handler["plugin"]})
                 except:
                     traceback.print_exc(5)
 
-                if event_type == EventTypes.CommandSent:
-                    await self._bot.CommandRegistry.handle_command(new_args["command_args"][0], new_args)
+        if event_type == EventTypes.CommandSent:
+            await self._bot.CommandRegistry.handle_command(new_args["command_args"][0], new_args)
