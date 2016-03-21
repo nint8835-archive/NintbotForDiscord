@@ -1,6 +1,5 @@
 import traceback
 
-from NintbotForDiscord.Enums import EventTypes
 from NintbotForDiscord.Plugin import BasePlugin
 from NintbotForDiscord.Permissions import Permission
 import os
@@ -28,13 +27,13 @@ class Plugin(BasePlugin):
         self.bot.CommandRegistry.register_command("osu",
                                                   "Gets the Osu stats for a user.",
                                                   Permission(),
-                                                  plugin_data)
-        self.bot.register_handler(EventTypes.CommandSent, self.on_command, self)
+                                                  plugin_data,
+                                                  self.on_command)
         with open(os.path.join(folder, "config.json")) as f:
             self.config = json.load(f)
 
     async def on_command(self, args):
-        if args["command_args"][0] == "osu" and len(args["command_args"]) >= 2:
+        if len(args["command_args"]) >= 2:
             username = " ".join(args["command_args"][1:])
             user_data = requests.get("https://osu.ppy.sh/api/get_user",
                                      params = {"k": self.config["api_key"],
