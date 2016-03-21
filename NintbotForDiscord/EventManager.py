@@ -37,4 +37,6 @@ class EventManager:
                     await self.queue.put({"handler": handler["handler"], "type": event_type, "args": new_args, "plugin": handler["plugin"]})
                 except:
                     traceback.print_exc(5)
-                # asyncio.ensure_future(handler["handler"](new_args), loop = self.loop)
+
+                if event_type == EventTypes.CommandSent:
+                    await self._bot.CommandRegistry.handle_command(new_args["command_name"], new_args)
