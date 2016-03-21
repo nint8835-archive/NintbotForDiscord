@@ -1,4 +1,3 @@
-from NintbotForDiscord.Enums import EventTypes
 from NintbotForDiscord.Plugin import BasePlugin
 from NintbotForDiscord.Permissions import Permission
 
@@ -23,14 +22,13 @@ class Plugin(BasePlugin):
         self.bot.CommandRegistry.register_command("meme",
                                                   "Posts an amazing meme.",
                                                   Permission(),
-                                                  plugin_data)
-        self.bot.register_handler(EventTypes.CommandSent, self.on_command, self)
+                                                  plugin_data,
+                                                  self.on_command)
 
     async def on_command(self, args):
-        if args["command_args"][0] == "meme":
-            submission = self.praw.get_random_submission("+".join(subreddits))
-            if not submission.is_self:
-                await self.bot.send_message(args["channel"], submission.url.replace(".gifv", ".gif"))
-            else:
-                await self.bot.send_message(args["channel"], "{}\n{}".format(submission.title, submission.selftext))
+        submission = self.praw.get_random_submission("+".join(subreddits))
+        if not submission.is_self:
+            await self.bot.send_message(args["channel"], submission.url.replace(".gifv", ".gif"))
+        else:
+            await self.bot.send_message(args["channel"], "{}\n{}".format(submission.title, submission.selftext))
 
