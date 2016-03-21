@@ -23,9 +23,9 @@ class CommandRegistry:
         })
         self.logger.debug("New command registered. Info: {}".format(self.commands[-1]))
 
-    def unregister_command(self, command: str, plugin_info: dict):
+    def unregister_command(self, command_name: str, plugin_info: dict):
         for command in self.commands[:]:
-            if command["command"] == command and command["plugin_info"] == plugin_info:
+            if command["command"] == command_name and command["plugin_info"] == plugin_info:
                 self.commands.remove(command)
 
     def unregister_all_commands_for_plugin(self, plugin_data):
@@ -44,10 +44,11 @@ class CommandRegistry:
         for command in self.commands:
             if command["command"] == command_name:
                 if command["handler"] is not None:
-                    try:
-                        await asyncio.wait_for(command["handler"](args),
-                                               timeout = self.bot.config["event_timeout"],
-                                               loop = self.bot.EventManager.loop)
-                    except asyncio.TimeoutError:
-                        self.bot.logger.warning("Handling of {} command from plugin {} timed out.".format(command,
-                                                                                                          command["plugin_info"]["plugin_name"]))
+                    if command["required_permission"].has_permission(args["author"]):
+                        try:
+                            await asyncio.wait_for(command["handler"](args),
+                                                   timeout = self.bot.config["event_timeout"],
+                                                   loop = self.bot.EventManager.loop)
+                        except asyncio.TimeoutError:
+                            self.bot.logger.warning("Handling of {} command from plugin {} timed out.".format(command,
+                                                                                                              command["plugin_info"]["plugin_name"]))
