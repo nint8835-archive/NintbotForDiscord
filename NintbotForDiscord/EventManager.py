@@ -39,4 +39,4 @@ class EventManager:
                     traceback.print_exc(5)
 
                 if event_type == EventTypes.CommandSent:
-                    await self._bot.CommandRegistry.handle_command(new_args["command_name"], new_args)
+                    await self._bot.CommandRegistry.handle_command(new_args["command_args"][0], new_args)
