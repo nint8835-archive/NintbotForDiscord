@@ -33,61 +33,68 @@ class Plugin(BasePlugin):
         super(Plugin, self).__init__(bot_instance, plugin_data, folder)
         self.started_time = 0
         self.admin = create_match_any_permission_group([Owner(self.bot), ManageMessages()])
-        self.bot.register_handler(EventTypes.CommandSent, self.on_command, self)
         self.bot.register_handler(EventTypes.OnReady, self.on_ready, self)
 
-        self.bot.CommandRegistry.register_command("invite",
-                                                  "Makes the bot join a server using an invite link.",
-                                                  Permission(),
-                                                  plugin_data)
         self.bot.CommandRegistry.register_command("info",
                                                   "Gets general information about the bot.",
                                                   Permission(),
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.command_info)
         self.bot.CommandRegistry.register_command("debug",
                                                   "Runs Python code to test features.",
                                                   Owner(self.bot),
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.command_debug)
         self.bot.CommandRegistry.register_command("purge",
                                                   "Purges all messages for a user.",
                                                   self.admin,
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.command_purge)
         self.bot.CommandRegistry.register_command("private_messages",
                                                   "Checks the private messages the bot has received.",
                                                   self.admin,
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.command_private_messages)
         self.bot.CommandRegistry.register_command("plugins",
                                                   "Views the currently installed plugins.",
                                                   Permission(),
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.command_plugins)
         self.bot.CommandRegistry.register_command("purgebot",
                                                   "Deletes all of the bot's messages from the channel.",
                                                   self.admin,
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.command_purgebot)
         self.bot.CommandRegistry.register_command("regexpurge",
                                                   "Deletes messages filtered using a regular expression.",
                                                   self.admin,
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.command_regexpurge)
         self.bot.CommandRegistry.register_command("stop",
                                                   "Stops the bot.",
                                                   Owner(self.bot),
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.command_stop)
         self.bot.CommandRegistry.register_command("uptime",
                                                   "Displays the bot's uptime.",
                                                   Permission(),
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.command_uptime)
         self.bot.CommandRegistry.register_command("commands",
                                                   "Displays what commands you have access to.",
                                                   Permission(),
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.command_commands)
         self.bot.CommandRegistry.register_command("userinfo",
                                                   "Displays info about a certain user.",
                                                   Permission(),
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.command_userinfo)
         self.bot.CommandRegistry.register_command("invitebot",
                                                   "Posts the invite link for the bot.",
                                                   Permission(),
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.command_invitelink)
 
         with open(os.path.join(folder, "config.json")) as f:
             self.config = json.load(f)
@@ -143,44 +150,6 @@ class Plugin(BasePlugin):
             for role in server.roles:
                 roles.append(role)
         return roles
-
-    async def on_command(self, args):
-
-        if args["command_args"][0] == "info":
-            await self.command_info(args)
-
-        elif args["command_args"][0] == "debug":
-            await self.command_debug(args)
-
-        elif args["command_args"][0] == "purge":
-            await self.command_purge(args)
-
-        elif args["command_args"][0] == "private_messages" and self.admin.has_permission(args["author"]):
-            await self.command_private_messages(args)
-
-        elif args["command_args"][0] == "plugins":
-            await self.command_plugins(args)
-
-        elif args["command_args"][0] == "purgebot" and self.admin.has_permission(args["author"]):
-            await self.command_purgebot(args)
-
-        elif args["command_args"][0] == "regexpurge":
-            await self.command_regexpurge(args)
-
-        elif args["command_args"][0] == "stop" and Owner(self.bot).has_permission(args["author"]):
-            await self.bot.logout()
-
-        elif args["command_args"][0] == "uptime":
-            await self.command_uptime(args)
-
-        elif args["command_args"][0] == "commands":
-            await self.command_commands(args)
-
-        elif args["command_args"][0] == "userinfo" and len(args["command_args"]) >= 2:
-            await self.command_userinfo(args)
-
-        elif args["command_args"][0] == "invitebot":
-            await self.bot.send_message(args["channel"], "Invite the bot to your server using the following link: https://discordapp.com/oauth2/authorize?&client_id={}&scope=bot".format(self.bot.config["app_id"]))
 
     async def command_info(self, args):
         await self.bot.send_message(args["channel"],
@@ -278,13 +247,20 @@ class Plugin(BasePlugin):
             await self.bot.send_message(args["channel"], message_str + "```")
 
     async def command_userinfo(self, args):
-        users = [user for user in args["channel"].server.members if user.name == " ".join(args["command_args"][1:])]
-        for user in users:
-            await self.bot.send_message(args["channel"], USER_INFO_STRING.format(user.name,
-                                                                                 user.id,
-                                                                                 user.discriminator,
-                                                                                 user.avatar_url,
-                                                                                 user.created_at))
+        if len(args["command_args"]) >= 2:
+            users = [user for user in args["channel"].server.members if user.name == " ".join(args["command_args"][1:])]
+            for user in users:
+                await self.bot.send_message(args["channel"], USER_INFO_STRING.format(user.name,
+                                                                                     user.id,
+                                                                                     user.discriminator,
+                                                                                     user.avatar_url,
+                                                                                     user.created_at))
+
+    async def command_stop(self, args):
+        await self.bot.logout()
+
+    async def command_invitelink(self, args):
+        await self.bot.send_message(args["channel"], "Invite the bot to your server using the following link: https://discordapp.com/oauth2/authorize?&client_id={}&scope=bot".format(self.bot.config["app_id"]))
 
     async def on_ready(self, args):
         await self.bot.change_status(game = Game(name = "Nintbot V{}".format(self.bot.VERSION)))
