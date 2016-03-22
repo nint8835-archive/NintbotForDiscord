@@ -240,7 +240,7 @@ class Plugin(BasePlugin):
             if message_str == "":
                 message_str += "```"
             if len(message_str)>=1700:
-                await self.bot.send_message(args["channel"], message_str + "```")
+                await self.bot.send_message(args["author"], message_str + "```")
                 message_str = "```"
             message_str += "{}{}: {}\n".format(self.bot.config["command_prefix"], command["command"], command["description"])
         if message_str != "":
