@@ -244,7 +244,7 @@ class Plugin(BasePlugin):
                 message_str = "```"
             message_str += "{}{}: {}\n".format(self.bot.config["command_prefix"], command["command"], command["description"])
         if message_str != "":
-            await self.bot.send_message(args["channel"], message_str + "```")
+            await self.bot.send_message(args["author"], message_str + "```")
 
     async def command_userinfo(self, args):
         if len(args["command_args"]) >= 2:
