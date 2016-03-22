@@ -71,7 +71,10 @@ class InWhitelistedServer(Permission):
         self.plugin = plugin_instance
 
     def has_permission(self, member: Member) -> bool:
-        return member.server.id in self.plugin.config["whitelisted_servers"]
+        try:
+            return member.server.id in self.plugin.config["whitelisted_servers"]
+        except:
+            return False
 
 
 class Plugin(BasePlugin):
