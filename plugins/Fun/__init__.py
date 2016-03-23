@@ -175,7 +175,7 @@ class Plugin(BasePlugin):
                 submission = self.praw.get_random_submission(args["command_args"][1])
                 if (submission.over_18 and args["channel"].id in self.config["nsfw_channels"]) or not submission.over_18:
                     if not submission.is_self:
-                        await self.bot.send_message(args["channel"], submission.url.replace(".gifv", ".gif"))
+                        await self.bot.send_message(args["channel"], "{}\n{}".format(submission.title, submission.url.replace(".gifv", ".gif")))
                     else:
                         await self.bot.send_message(args["channel"], "{}\n{}".format(submission.title, submission.selftext))
                 else:
