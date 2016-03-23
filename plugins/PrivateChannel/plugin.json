@@ -1,7 +1,7 @@
 {
   "plugin_name": "Private Channels",
   "plugin_developer": "nint8835",
-  "plugin_version": "1.5",
+  "plugin_version": "1.6",
   "module_name": "Private Channels",
   "main_file": "__init__.py"
 }

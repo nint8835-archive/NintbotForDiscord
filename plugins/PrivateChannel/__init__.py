@@ -22,9 +22,9 @@ class Plugin(BasePlugin):
         self.bot.CommandRegistry.register_command("voice",
                                                   "Manage private voice channels.",
                                                   Permission(),
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.on_command)
         self.logger = logging.getLogger("Private Channels")
-        self.bot.register_handler(EventTypes.CommandSent, self.on_command, self)
         self.bot.register_handler(EventTypes.OnReady, self.on_ready, self)
         self.bot.register_handler(EventTypes.ChannelDeleted, self.on_channel_deleted, self)
         with open(os.path.join(folder, "config.json")) as f:
@@ -61,89 +61,88 @@ class Plugin(BasePlugin):
     async def on_command(self, args):
         try:
             if not args["channel"].is_private:
-                if args["command_args"][0] == "voice":
-                    if args["command_args"][1] == "create":
-                        if len(self.channels.select(SelectionMode.VALUE_EQUALS, "owner_id", args["author"].id)) != 0:
-                            self.logger.info("{} tried to create a channel, but they already have one.".format(args["author"].name))
-                            await self.bot.send_message(args["channel"], ":no_entry_sign: You already have a voice channel. Use the 'cleanup' option if you can't find it.")
+                if args["command_args"][1] == "create":
+                    if len(self.channels.select(SelectionMode.VALUE_EQUALS, "owner_id", args["author"].id)) != 0:
+                        self.logger.info("{} tried to create a channel, but they already have one.".format(args["author"].name))
+                        await self.bot.send_message(args["channel"], ":no_entry_sign: You already have a voice channel. Use the 'cleanup' option if you can't find it.")
+                    else:
+                        if len(self.channels.select(SelectionMode.VALUE_EQUALS, "server_id", args["message"].server)) >= self.config["max_channels"]:
+                            await self.bot.send_message(args["channel"], ":no_entry_sign: This server has reached the channel limit. Wait for some users to abandon their channels, and then try again.")
+                            self.logger.info("{} tried to create a channel, but the max channels has been reached.".format(args["author"].name))
                         else:
-                            if len(self.channels.select(SelectionMode.VALUE_EQUALS, "server_id", args["message"].server)) >= self.config["max_channels"]:
-                                await self.bot.send_message(args["channel"], ":no_entry_sign: This server has reached the channel limit. Wait for some users to abandon their channels, and then try again.")
-                                self.logger.info("{} tried to create a channel, but the max channels has been reached.".format(args["author"].name))
-                            else:
-                                name = self.generate_name()
-                                channel = await self.bot.create_channel(args["message"].server, name, "voice")
-                                role = await self.bot.create_role(args["message"].server, name = name)
-                                self.channels.insert({"id": channel.id,
-                                                      "server_id": args["message"].server.id,
-                                                      "role_id": role.id,
-                                                      "owner_id": args["author"].id,
-                                                      "name": name})
+                            name = self.generate_name()
+                            channel = await self.bot.create_channel(args["message"].server, name, "voice")
+                            role = await self.bot.create_role(args["message"].server, name = name)
+                            self.channels.insert({"id": channel.id,
+                                                  "server_id": args["message"].server.id,
+                                                  "role_id": role.id,
+                                                  "owner_id": args["author"].id,
+                                                  "name": name})
 
-                                await self.bot.add_roles(args["author"], role)
+                            await self.bot.add_roles(args["author"], role)
 
-                                allow = discord.Permissions.none()
-                                deny = discord.Permissions.none()
-                                deny.connect = True
-                                await self.bot.edit_channel_permissions(channel, [role for role in args["channel"].server.roles if role.is_everyone][0], allow = allow, deny = deny)
+                            allow = discord.Permissions.none()
+                            deny = discord.Permissions.none()
+                            deny.connect = True
+                            await self.bot.edit_channel_permissions(channel, [role for role in args["channel"].server.roles if role.is_everyone][0], allow = allow, deny = deny)
 
-                                allow = discord.Permissions.none()
-                                allow.connect = True
-                                allow.speak = True
-                                allow.use_voice_activation = True
-                                await self.bot.edit_channel_permissions(channel, role, allow = allow)
+                            allow = discord.Permissions.none()
+                            allow.connect = True
+                            allow.speak = True
+                            allow.use_voice_activation = True
+                            await self.bot.edit_channel_permissions(channel, role, allow = allow)
 
-                                self.logger.info("{} created a new channel called {}.".format(args["author"].name, name))
-                                await self.bot.send_message(args["channel"], ":ballot_box_with_check: {}, your channel has been created. It's name is {}. Use {}voice invite <username> to invite users.".format(args["author"].mention, name.replace(" ", "-"), self.bot.config["command_prefix"]))
+                            self.logger.info("{} created a new channel called {}.".format(args["author"].name, name))
+                            await self.bot.send_message(args["channel"], ":ballot_box_with_check: {}, your channel has been created. It's name is {}. Use {}voice invite <username> to invite users.".format(args["author"].mention, name.replace(" ", "-"), self.bot.config["command_prefix"]))
 
-                    if args["command_args"][1] == "invite":
-                        if not len(self.channels.select(SelectionMode.VALUE_EQUALS, "owner_id", args["author"].id)) != 0:
-                                self.logger.info("{} tried to invite somebody to their channel, but they don't have one.".format(args["author"].name))
-                                await self.bot.send_message(args["channel"], ":no_entry_sign: You don't have a voice channel. Use the create option to create one.")
+                if args["command_args"][1] == "invite":
+                    if not len(self.channels.select(SelectionMode.VALUE_EQUALS, "owner_id", args["author"].id)) != 0:
+                            self.logger.info("{} tried to invite somebody to their channel, but they don't have one.".format(args["author"].name))
+                            await self.bot.send_message(args["channel"], ":no_entry_sign: You don't have a voice channel. Use the create option to create one.")
+                    else:
+                        user = [user for user in args["channel"].server.members if user.name == " ".join(args["command_args"][2:])][0]
+                        channel_data = self.channels.select(SelectionMode.VALUE_EQUALS, "owner_id", args["author"].id)[0]
+                        role = [role for role in self.bot.PluginManager.get_plugin_instance_by_name("Nintbot Core").get_all_roles() if role.id == channel_data["role_id"]][0]
+                        if args["message"].server.id == channel_data["server_id"]:
+                            self.logger.info("{} invited {} to their channel.".format(args["author"].name, user.name))
+                            await self.bot.add_roles(user, role)
+                            await self.bot.send_message(args["channel"], ":ballot_box_with_check: {}, you were invited to {}'s voice channel, {}.".format(user.mention, args["author"].mention, channel_data["name"]))
                         else:
-                            user = [user for user in args["channel"].server.members if user.name == " ".join(args["command_args"][2:])][0]
-                            channel_data = self.channels.select(SelectionMode.VALUE_EQUALS, "owner_id", args["author"].id)[0]
-                            role = [role for role in self.bot.PluginManager.get_plugin_instance_by_name("Nintbot Core").get_all_roles() if role.id == channel_data["role_id"]][0]
-                            if args["message"].server.id == channel_data["server_id"]:
-                                self.logger.info("{} invited {} to their channel.".format(args["author"].name, user.name))
-                                await self.bot.add_roles(user, role)
-                                await self.bot.send_message(args["channel"], ":ballot_box_with_check: {}, you were invited to {}'s voice channel, {}.".format(user.mention, args["author"].mention, channel_data["name"]))
-                            else:
-                                self.logger.info("{} attempted to invite a user to a channel from the wrong server.".format(args["author"].name))
-                                await self.bot.send_message(args["channel"], ":no_entry_sign: Your channel is not in this server.")
+                            self.logger.info("{} attempted to invite a user to a channel from the wrong server.".format(args["author"].name))
+                            await self.bot.send_message(args["channel"], ":no_entry_sign: Your channel is not in this server.")
 
-                    if args["command_args"][1] == "kick":
-                        if not len(self.channels.select(SelectionMode.VALUE_EQUALS, "owner_id", args["author"].id)) != 0:
-                                self.logger.info("{} tried to kick somebody from their channel, but they don't have one.".format(args["author"].name))
-                                await self.bot.send_message(args["channel"], ":no_entry_sign: You don't have a voice channel. Use the create option to create one.")
+                if args["command_args"][1] == "kick":
+                    if not len(self.channels.select(SelectionMode.VALUE_EQUALS, "owner_id", args["author"].id)) != 0:
+                            self.logger.info("{} tried to kick somebody from their channel, but they don't have one.".format(args["author"].name))
+                            await self.bot.send_message(args["channel"], ":no_entry_sign: You don't have a voice channel. Use the create option to create one.")
+                    else:
+                        user = [user for user in args["channel"].server.members if user.name == " ".join(args["command_args"][2:])][0]
+                        channel_data = self.channels.select(SelectionMode.VALUE_EQUALS, "owner_id", args["author"].id)[0]
+                        role = [role for role in self.bot.PluginManager.get_plugin_instance_by_name("Nintbot Core").get_all_roles() if role.id == channel_data["role_id"]][0]
+                        if args["message"].server.id == channel_data["server_id"]:
+                            self.logger.info("{} kicked {} from their channel.".format(args["author"].name, user.name))
+                            await self.bot.remove_roles(user, role)
+                            await self.bot.send_message(args["channel"], ":ballot_box_with_check: {}, you were kicked from {}'s voice channel, {}.".format(user.mention, args["author"].mention, channel_data["name"]))
                         else:
-                            user = [user for user in args["channel"].server.members if user.name == " ".join(args["command_args"][2:])][0]
-                            channel_data = self.channels.select(SelectionMode.VALUE_EQUALS, "owner_id", args["author"].id)[0]
-                            role = [role for role in self.bot.PluginManager.get_plugin_instance_by_name("Nintbot Core").get_all_roles() if role.id == channel_data["role_id"]][0]
-                            if args["message"].server.id == channel_data["server_id"]:
-                                self.logger.info("{} kicked {} from their channel.".format(args["author"].name, user.name))
-                                await self.bot.remove_roles(user, role)
-                                await self.bot.send_message(args["channel"], ":ballot_box_with_check: {}, you were kicked from {}'s voice channel, {}.".format(user.mention, args["author"].mention, channel_data["name"]))
-                            else:
-                                self.logger.info("{} attempted to kick a user from a channel from the wrong server.".format(args["author"].name))
-                                await self.bot.send_message(args["channel"], ":no_entry_sign: Your channel is not in this server.")
+                            self.logger.info("{} attempted to kick a user from a channel from the wrong server.".format(args["author"].name))
+                            await self.bot.send_message(args["channel"], ":no_entry_sign: Your channel is not in this server.")
 
-                    if args["command_args"][1] == "cleanup":
-                        await self.cleanup()
-                        await self.bot.send_message(args["channel"], ":ballot_box_with_check: Removed missing channels from the database.")
+                if args["command_args"][1] == "cleanup":
+                    await self.cleanup()
+                    await self.bot.send_message(args["channel"], ":ballot_box_with_check: Removed missing channels from the database.")
 
-                    if args["command_args"][1] == "remove":
-                        if not len(self.channels.select(SelectionMode.VALUE_EQUALS, "owner_id", args["author"].id)) != 0:
-                                self.logger.info("{} tried to delete their channel, but they don't have one.".format(args["author"].name))
-                                await self.bot.send_message(args["channel"], ":no_entry_sign: You don't have a voice channel. Use the create option to create one.")
-                        else:
-                            channel_data = self.channels.select(SelectionMode.VALUE_EQUALS, "owner_id", args["author"].id)[0]
-                            role = [role for role in self.bot.PluginManager.get_plugin_instance_by_name("Nintbot Core").get_all_roles() if role.id == channel_data["role_id"]][0]
-                            channel = [channel for channel in args["channel"].server.channels if channel.id == channel_data["id"]][0]
-                            await self.bot.delete_channel(channel)
-                            await self.bot.delete_role(args["channel"].server, role)
-                            self.logger.info("{} deleted their channel.".format(args["author"].name))
-                            await self.bot.send_message(args["channel"], ":ballot_box_with_check: You have deleted your channel and released a channel slot for other users.")
+                if args["command_args"][1] == "remove":
+                    if not len(self.channels.select(SelectionMode.VALUE_EQUALS, "owner_id", args["author"].id)) != 0:
+                            self.logger.info("{} tried to delete their channel, but they don't have one.".format(args["author"].name))
+                            await self.bot.send_message(args["channel"], ":no_entry_sign: You don't have a voice channel. Use the create option to create one.")
+                    else:
+                        channel_data = self.channels.select(SelectionMode.VALUE_EQUALS, "owner_id", args["author"].id)[0]
+                        role = [role for role in self.bot.PluginManager.get_plugin_instance_by_name("Nintbot Core").get_all_roles() if role.id == channel_data["role_id"]][0]
+                        channel = [channel for channel in args["channel"].server.channels if channel.id == channel_data["id"]][0]
+                        await self.bot.delete_channel(channel)
+                        await self.bot.delete_role(args["channel"].server, role)
+                        self.logger.info("{} deleted their channel.".format(args["author"].name))
+                        await self.bot.send_message(args["channel"], ":ballot_box_with_check: You have deleted your channel and released a channel slot for other users.")
 
         except IndexError:
             pass
