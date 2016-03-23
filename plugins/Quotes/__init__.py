@@ -41,6 +41,10 @@ class Plugin(BasePlugin):
                     await self.bot.send_message(args["channel"], ":ballot_box_with_check: New quote added to database.")
                 except:
                     traceback.print_exc(5)
+        elif len(args["command_args"]) == 2:
+            quotes = [quote["msg"] for quote in self.quotes.data if quote["author"].count(args["command_args"][1]) >= 1]
+            # print(quotes)
+            await self.bot.send_message(args["channel"], "\n".join(quotes))
         if len(args["command_args"]) == 1:
             quote = random.choice(self.quotes.select(SelectionMode.ALL).rows)
             await self.bot.send_message(args["channel"], "\"{}\" {}".format(quote["msg"], quote["author"]))
