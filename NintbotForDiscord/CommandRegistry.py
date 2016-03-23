@@ -40,7 +40,7 @@ class CommandRegistry:
     def get_info_for_command(self, command):
         return [i for i in self.commands if i["command"] == command]
 
-    def regsiter_command_alias(self, original_command: str, alias: str, alias_plugin_info: dict):
+    def register_command_alias(self, original_command: str, alias: str, alias_plugin_info: dict):
         commands = self.get_info_for_command(original_command)
         if len(commands) >= 2:
             raise MultpleCommandsFoundException("Multiple commands matching the string {} were found when attempting to create the alias {}.".format(original_command, alias))
