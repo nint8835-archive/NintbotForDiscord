@@ -26,15 +26,17 @@ class Plugin(BasePlugin):
         self.bot.CommandRegistry.register_command("customcommand",
                                                   "Manage custom commands.",
                                                   self.manage_perm,
-                                                  self.plugin_data)
+                                                  self.plugin_data,
+                                                  self.command_customcommand)
         for command in self.commands.select(SelectionMode.ALL).rows:
             self.bot.CommandRegistry.register_command(command["command"],
                                                       "A custom command from the Custom Commands plugin.",
                                                       Permission(),
-                                                      self.plugin_data)
+                                                      self.plugin_data,
+                                                      self.command_handle_customcommand)
 
-    async def on_command(self, args):
-        if args["command_args"][0] == "customcommand" and self.manage_perm.has_permission(args["author"]) and len(args["command_args"]) > 1:
+    async def command_customcommand(self, args):
+        if len(args["command_args"]) > 1:
 
             if args["command_args"][1] == "add" and len(args["command_args"]) > 3:
                 command = args["command_args"][2]
@@ -56,7 +58,7 @@ class Plugin(BasePlugin):
                 else:
                     await self.bot.send_message(args["channel"], ":no_entry_sign: That command does not exist.")
 
-        else:
-            sel = self.commands.select(SelectionMode.VALUE_EQUALS, "command", args["command_args"][0])
-            if len(sel) == 1:
-                await self.bot.send_message(args["channel"], sel[0]["message"])
+    async def command_handle_customcommand(self, args):
+        sel = self.commands.select(SelectionMode.VALUE_EQUALS, "command", args["command_args"][0])
+        if len(sel) == 1:
+            await self.bot.send_message(args["channel"], sel[0]["message"])
