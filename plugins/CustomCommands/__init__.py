@@ -14,7 +14,6 @@ class Plugin(BasePlugin):
     def __init__(self, bot_instance, plugin_data, folder):
         super(Plugin, self).__init__(bot_instance, plugin_data, folder)
         self.manage_perm = create_match_any_permission_group([ManageMessages(), Owner(self.bot)])
-        self.bot.register_handler(EventTypes.CommandSent, self.on_command, self)
         sys.path.append(os.path.join(folder))
         from JSONDB import JSONDatabase, SelectionMode
         global JSONDatabase, SelectionMode
