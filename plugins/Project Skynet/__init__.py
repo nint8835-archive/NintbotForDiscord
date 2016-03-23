@@ -20,13 +20,13 @@ class Plugin(BasePlugin):
         self.bot.CommandRegistry.register_command("answer",
                                                   "Asks my A.I. a yes or no question.",
                                                   Permission(),
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.command_answer)
         self.bot.CommandRegistry.register_command("train",
                                                   "Trains my data with a yes or no question",
                                                   Owner(self.bot),
-                                                  plugin_data)
-
-        self.bot.register_handler(EventTypes.CommandSent, self.on_command, self)
+                                                  plugin_data,
+                                                  self.command_train)
 
     def get_portions_for_message(self, message: str) -> tuple:
         words = message.split(" ")
@@ -62,19 +62,18 @@ class Plugin(BasePlugin):
             avg += value
         return avg / len(averages) >= 0.5
 
-    async def on_command(self, args):
-        try:
-            if args["command_args"][0] == "answer" and len(args["command_args"]) >= 3:
-                resp = self.get_response(" ".join(args["command_args"][1:]))
-                if resp:
-                    await self.bot.send_message(args["channel"], "My research seems to say the answer is yes.")
-                else:
-                    await self.bot.send_message(args["channel"], "My research seems to say the answer is no.")
+    async def command_answer(self, args):
+        if len(args["command_args"]) >= 3:
+            resp = self.get_response(" ".join(args["command_args"][1:]))
+            if resp:
+                await self.bot.send_message(args["channel"], "My research seems to say the answer is yes.")
+            else:
+                await self.bot.send_message(args["channel"], "My research seems to say the answer is no.")
 
-            if args["command_args"][0] == "train" and len(args["command_args"]) >= 4 and Owner(self.bot).has_permission(args["author"]):
-                message_to_train = " ".join(args["command_args"][1:-1])
-                value = bool(args["command_args"][-1])
-                self.train(message_to_train, value)
-        except:
-            traceback.print_exc(5)
+    async def command_train(self, args):
+        if len(args["command_args"]) >= 4:
+            message_to_train = " ".join(args["command_args"][1:-1])
+            value = bool(args["command_args"][-1])
+            self.train(message_to_train, value)
+
 
