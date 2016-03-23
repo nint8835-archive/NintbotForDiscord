@@ -14,7 +14,7 @@ __author__ = 'Riley Flynn (nint8835)'
 
 
 class Bot(TokenClient):
-    VERSION = "03.23.2016.2"
+    VERSION = "03.23.2016.3"
 
     def __init__(self, config: dict, loop: asyncio.BaseEventLoop = None):
         super(Bot, self).__init__(loop = loop)

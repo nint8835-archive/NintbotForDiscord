@@ -47,7 +47,7 @@ class CommandRegistry:
         elif len(commands) == 0:
             raise CommandNotFoundException("No commands found matching the string {} when attempting to create the alias {}.".format(original_command, alias))
         else:
-            self.register_command(commands[0]["command"],
+            self.register_command(alias,
                                   commands[0]["description"],
                                   commands[0]["required_permission"],
                                   alias_plugin_info,
