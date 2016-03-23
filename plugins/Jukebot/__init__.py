@@ -83,53 +83,63 @@ class Plugin(BasePlugin):
         super(Plugin, self).__init__(bot_instance, plugin_data, folder)
         with open(os.path.join(folder, "config.json")) as f:
             self.config = json.load(f)
-        self.admin = create_match_any_permission_group([Owner(self.bot), MuteMembers()])
-        self.bot.register_handler(EventTypes.CommandSent, self.on_command, self)
+        self.admin = create_match_any_permission_group([Owner(self.bot), MuteMembers(), InWhitelistedServer(self)])
 
         self.bot.CommandRegistry.register_command("play",
                                                   "Adds a song to the song queue.",
                                                   InWhitelistedServer(self),
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.command_play)
         self.bot.CommandRegistry.register_command("joinvoice",
                                                   "Makes the bot connect to a voice channel.",
                                                   WhitelistedUser(self),
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.command_joinvoice)
         self.bot.CommandRegistry.register_command("leavevoice",
                                                   "Makes the bot disconnect from a voice channel",
                                                   WhitelistedUser(self),
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.command_leavevoice)
         self.bot.CommandRegistry.register_command("skip",
                                                   "Votes to skip the current song.",
                                                   InWhitelistedServer(self),
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.command_skip)
         self.bot.CommandRegistry.register_command("haroo",
                                                   "Requests the greatest song in the world. HAROO HAROO HAROO!",
                                                   InWhitelistedServer(self),
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.command_haroo)
         self.bot.CommandRegistry.register_command("youtube",
                                                   "Searches your request on Youtube and adds the first result to the queue.",
                                                   InWhitelistedServer(self),
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.command_youtube)
         self.bot.CommandRegistry.register_command("queue",
                                                   "Gets the current length of the queue.",
                                                   InWhitelistedServer(self),
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.command_queue)
         self.bot.CommandRegistry.register_command("volume",
                                                   "Changes the playback volume for the remaining songs in the queue.",
                                                   self.admin,
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.command_volume)
         self.bot.CommandRegistry.register_command("rate",
                                                   "Changes the sample rate of the remaining songs in the queue.",
                                                   self.admin,
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.command_rate)
         self.bot.CommandRegistry.register_command("voteskip",
                                                   "Toggles the ability to voteskip songs.",
                                                   self.admin,
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.command_voteskip)
         self.bot.CommandRegistry.register_command("ffmpegopts",
                                                   "Changes the FFMPEG filter options.",
                                                   self.admin,
-                                                  plugin_data)
+                                                  plugin_data,
+                                                  self.command_ffmpegopts)
 
         load_opus(os.path.join(folder, "libopus"))
         self.queue = asyncio.Queue()
@@ -203,146 +213,148 @@ class Plugin(BasePlugin):
                 await self.bot.send_message(self.text_channel, "HAROO HAROO HAROO HAROO HAROO HAROO HAROO HAROO HAROO HAROO HAROO HAROO HAROO HAROO")
             await self.next_song_event.wait()
 
-    # noinspection PyBroadException
-    async def on_command(self, args):
-        if (not args["message"].channel.is_private) and args["command_args"][0] in ["skip", "joinvoice", "play", "leavevoice", "volume", "rate", "voteskip", "queue", "haroo", "youtube", "ffmpegopts"]:
-            try:
-                if InWhitelistedServer(self).has_permission(args["author"]):
-                    self.text_channel = args["message"].channel
-                    if args["command_args"][0] == "play" and len(args["command_args"]) >= 2:
-                        for item in args["command_args"][1:]:
-                            try:
-                                domain = ".".join(item.split("://")[1].split("/")[0].split(".")[-2:])
-                                if domain in self.config["whitelisted_domains"]:
-                                    stream_info_getter = self.bot.EventManager.loop.run_in_executor(None, get_stream_info, item)
-                                    stream_info = await stream_info_getter
-                                    if stream_info is not None:
-                                        info = {"url": item, "info": stream_info, "requester": args["author"]}
-                                        await self.queue.put(info)
-                                        await self.bot.send_message(args["message"].channel,
-                                                                         ":ballot_box_with_check: Song {} added to queue.".format(info["info"]["title"]))
-                                    else:
-                                        await self.bot.send_message(args["message"].channel,
-                                                                    ":no_entry_sign: Song from {} failed to be added to queue. Please use a different upload of the song.".format(item))
-                            except:
-                                pass
-
-                    if args["command_args"][0] == "joinvoice" and WhitelistedUser(self).has_permission(args["author"]):
-                        try:
-                            await self.bot.voice.disconnect()
-                        except:
-                            pass
-                        if len(args["command_args"]) == 1:
-                            for channel in [i for i in args["message"].server.channels if i.type == ChannelType.voice]:
-                                if args["author"] in channel.voice_members:
-                                    await self.bot.join_voice_channel(channel)
-                                    await self.bot.send_message(args["message"].channel,
-                                                                     ":ballot_box_with_check: Joined voice channel \"{}\"".format(channel.name))
-                        if len(args["command_args"]) > 1:
-                            joined = False
-                            for channel in [i for i in args["message"].server.channels if i.type == ChannelType.voice]:
-                                if channel.name == args["command_args"][1]:
-                                    await self.bot.join_voice_channel(channel)
-                                    await self.bot.send_message(args["message"].channel,
-                                                                     ":ballot_box_with_check: Joined voice channel \"{}\"".format(channel.name))
-                                    joined = True
-                                    break
-
-                            if not joined:
-                                await self.bot.send_message(args["channel"], ":no_entry_sign: Channel not found.")
-
-                    if args["command_args"][0] == "leavevoice" and WhitelistedUser(self).has_permission(args["author"]):
-                        try:
-                            await self.bot.voice.disconnect()
-                            await self.bot.send_message(self.text_channel, ":ballot_box_with_check: Disconnected from voice.")
-                        except:
-                            await self.bot.send_message(args["channel"], ":no_entry_sign: The bot is not in a voice channel.")
-
-                    if args["command_args"][0] == "skip":
-                        if self.admin.has_permission(args["author"]):
-                            await self.bot.send_message(self.text_channel, ":ballot_box_with_check: Admin skipped song.")
-                            self.player.stop()
-                            self.toggle_next_song()
-
-                        elif args["author"] in self.bot.voice.channel.voice_members and args["author"] not in self.skips and self.config["voteskip_enabled"]:
-                            self.skips.append(args["author"])
-                            await self.bot.send_message(self.text_channel, ":question: {} of the required {} users have voted to skip.".format(len(self.skips), int(math.ceil((len(self.bot.voice.channel.voice_members)-1)/2))))
-                            if len(self.skips) >= int(math.ceil((len(self.bot.voice.channel.voice_members)-1)/2)):
-                                await self.bot.send_message(self.text_channel, ":ballot_box_with_check: Vote passed.")
-                                self.player.stop()
-                                self.toggle_next_song()
-
-                    if args["command_args"][0] == "haroo":
-                        item = "https://www.youtube.com/watch?v=Yg_rf2d894k"
+    async def command_play(self, args):
+        self.text_channel = args["message"].channel
+        if len(args["command_args"]) >= 2:
+            for item in args["command_args"][1:]:
+                try:
+                    domain = ".".join(item.split("://")[1].split("/")[0].split(".")[-2:])
+                    if domain in self.config["whitelisted_domains"]:
                         stream_info_getter = self.bot.EventManager.loop.run_in_executor(None, get_stream_info, item)
                         stream_info = await stream_info_getter
                         if stream_info is not None:
                             info = {"url": item, "info": stream_info, "requester": args["author"]}
                             await self.queue.put(info)
                             await self.bot.send_message(args["message"].channel,
-                                                        ":ballot_box_with_check: Song {} added to queue.".format(info["info"]["title"]))
+                                                             ":ballot_box_with_check: Song {} added to queue.".format(info["info"]["title"]))
                         else:
                             await self.bot.send_message(args["message"].channel,
                                                         ":no_entry_sign: Song from {} failed to be added to queue. Please use a different upload of the song.".format(item))
+                except:
+                    pass
 
-                    if args["command_args"][0] == "youtube" and len(args["command_args"])>=2:
-                        try:
-                            query = " ".join(args["command_args"][1:])
-                            results = self._youtube.search().list(
-                                q=query,
-                                part="id",
-                                maxResults = 10
-                            ).execute().get("items", [])
-                            for result in results:
-                                if result["id"]["kind"] == "youtube#video":
-                                    item = "https://www.youtube.com/watch?v={}".format(result["id"]["videoId"])
-                                    break
-                                else:
-                                    item = ""
+    async def command_joinvoice(self, args):
+        self.text_channel = args["message"].channel
+        try:
+            await self.bot.voice.disconnect()
+        except:
+            pass
+        if len(args["command_args"]) == 1:
+            for channel in [i for i in args["message"].server.channels if i.type == ChannelType.voice]:
+                if args["author"] in channel.voice_members:
+                    await self.bot.join_voice_channel(channel)
+                    await self.bot.send_message(args["message"].channel,
+                                                     ":ballot_box_with_check: Joined voice channel \"{}\"".format(channel.name))
+        if len(args["command_args"]) > 1:
+            joined = False
+            for channel in [i for i in args["message"].server.channels if i.type == ChannelType.voice]:
+                if channel.name == args["command_args"][1]:
+                    await self.bot.join_voice_channel(channel)
+                    await self.bot.send_message(args["message"].channel,
+                                                     ":ballot_box_with_check: Joined voice channel \"{}\"".format(channel.name))
+                    joined = True
+                    break
 
-                            if item != "":
-                                stream_info_getter = self.bot.EventManager.loop.run_in_executor(None, get_stream_info, item)
-                                stream_info = await stream_info_getter
-                                if stream_info is not None:
-                                    info = {"url": item, "info": stream_info, "requester": args["author"]}
-                                    await self.queue.put(info)
-                                    await self.bot.send_message(args["message"].channel,
-                                                                ":ballot_box_with_check: Song {} added to queue.".format(info["info"]["title"]))
-                                else:
-                                    await self.bot.send_message(args["message"].channel,
-                                                                ":no_entry_sign: Song from {} failed to be added to queue. Please use a different upload of the song.".format(item))
-                        except:
-                            traceback.print_exc(5)
+            if not joined:
+                await self.bot.send_message(args["channel"], ":no_entry_sign: Channel not found.")
 
-                    if args["command_args"][0] == "queue":
-                        await self.bot.send_message(self.text_channel, ":information_source: There are {} songs currently in the queue.".format(self.queue.qsize()))
+    async def command_leavevoice(self, args):
+        self.text_channel = args["message"].channel
+        try:
+            await self.bot.voice.disconnect()
+            await self.bot.send_message(self.text_channel, ":ballot_box_with_check: Disconnected from voice.")
+        except:
+            await self.bot.send_message(args["channel"], ":no_entry_sign: The bot is not in a voice channel.")
 
-                    if args["command_args"][0] == "volume" and len(args["command_args"])==2 and self.admin.has_permission(args["author"]):
-                        self.config["playback_volume"] = args["command_args"][1]
-                        await self.bot.send_message(self.text_channel, ":ballot_box_with_check: Playback volume set to {}%.".format(float(self.config["playback_volume"]) * 100))
+    async def command_skip(self, args):
+        self.text_channel = args["message"].channel
+        if self.admin.has_permission(args["author"]):
+            await self.bot.send_message(self.text_channel, ":ballot_box_with_check: Admin skipped song.")
+            self.player.stop()
+            self.toggle_next_song()
 
-                    if args["command_args"][0] == "rate" and len(args["command_args"])==2 and self.admin.has_permission(args["author"]):
-                        self.config["playback_rate"] = int(args["command_args"][1])
-                        if args["command_args"][1] == "0":
-                            await self.bot.send_message(self.text_channel, ":ballot_box_with_check: Playback rate set to content default.".format(self.config["playback_rate"]))
-                        else:
-                            await self.bot.send_message(self.text_channel, ":ballot_box_with_check: Playback rate set to {}Hz.".format(self.config["playback_rate"]))
+        elif args["author"] in self.bot.voice.channel.voice_members and args["author"] not in self.skips and self.config["voteskip_enabled"]:
+            self.skips.append(args["author"])
+            await self.bot.send_message(self.text_channel, ":question: {} of the required {} users have voted to skip.".format(len(self.skips), int(math.ceil((len(self.bot.voice.channel.voice_members)-1)/2))))
+            if len(self.skips) >= int(math.ceil((len(self.bot.voice.channel.voice_members)-1)/2)):
+                await self.bot.send_message(self.text_channel, ":ballot_box_with_check: Vote passed.")
+                self.player.stop()
+                self.toggle_next_song()
 
-                    if args["command_args"][0] == "voteskip" and self.admin.has_permission(args["author"]):
-                        self.config["voteskip_enabled"] = not self.config["voteskip_enabled"]
-                        await self.bot.send_message(args["channel"], ":ballot_box_with_check: Voteskip enabled status set to {}.".format(self.config["voteskip_enabled"]))
+    async def command_haroo(self, args):
+        self.text_channel = args["message"].channel
+        item = "https://www.youtube.com/watch?v=Yg_rf2d894k"
+        stream_info_getter = self.bot.EventManager.loop.run_in_executor(None, get_stream_info, item)
+        stream_info = await stream_info_getter
+        if stream_info is not None:
+            info = {"url": item, "info": stream_info, "requester": args["author"]}
+            await self.queue.put(info)
+            await self.bot.send_message(args["message"].channel,
+                                        ":ballot_box_with_check: Song {} added to queue.".format(info["info"]["title"]))
+        else:
+            await self.bot.send_message(args["message"].channel,
+                                        ":no_entry_sign: Song from {} failed to be added to queue. Please use a different upload of the song.".format(item))
 
-                    if args["command_args"][0] == "ffmpegopts" and len(args["command_args"])>=2 and self.admin.has_permission(args["author"]):
-                        if args["command_args"][1] == "NONE":
-                            self.config["ffmpeg_options"] = ""
-                        else:
-                            self.config["ffmpeg_options"] = " ".join(args["command_args"][1:])
-                        await self.bot.send_message(self.text_channel, ":ballot_box_with_check: FFMPEG options updated")
+    async def command_youtube(self, args):
+        self.text_channel = args["message"].channel
+        if len(args["command_args"])>=2:
+            try:
+                query = " ".join(args["command_args"][1:])
+                results = self._youtube.search().list(
+                    q=query,
+                    part="id",
+                    maxResults = 10
+                ).execute().get("items", [])
+                for result in results:
+                    if result["id"]["kind"] == "youtube#video":
+                        item = "https://www.youtube.com/watch?v={}".format(result["id"]["videoId"])
+                        break
+                    else:
+                        item = ""
 
-
-                else:
-                    await self.bot.send_message(args["channel"], ":no_entry_sign: This server is not whitelisted in the config.")
-
+                if item != "":
+                    stream_info_getter = self.bot.EventManager.loop.run_in_executor(None, get_stream_info, item)
+                    stream_info = await stream_info_getter
+                    if stream_info is not None:
+                        info = {"url": item, "info": stream_info, "requester": args["author"]}
+                        await self.queue.put(info)
+                        await self.bot.send_message(args["message"].channel,
+                                                    ":ballot_box_with_check: Song {} added to queue.".format(info["info"]["title"]))
+                    else:
+                        await self.bot.send_message(args["message"].channel,
+                                                    ":no_entry_sign: Song from {} failed to be added to queue. Please use a different upload of the song.".format(item))
             except:
-                #await self.bot.send_message(args["channel"], "```{}```".format(traceback.format_exc(2)))
-                pass
+                traceback.print_exc(5)
+
+    async def command_queue(self, args):
+        self.text_channel = args["message"].channel
+        await self.bot.send_message(self.text_channel, ":information_source: There are {} songs currently in the queue.".format(self.queue.qsize()))
+
+    async def command_volume(self, args):
+        self.text_channel = args["message"].channel
+        if len(args["command_args"])==2:
+            self.config["playback_volume"] = args["command_args"][1]
+            await self.bot.send_message(self.text_channel, ":ballot_box_with_check: Playback volume set to {}%.".format(float(self.config["playback_volume"]) * 100))
+
+    async def command_rate(self, args):
+        self.text_channel = args["message"].channel
+        if len(args["command_args"])==2:
+            self.config["playback_rate"] = int(args["command_args"][1])
+            if args["command_args"][1] == "0":
+                await self.bot.send_message(self.text_channel, ":ballot_box_with_check: Playback rate set to content default.".format(self.config["playback_rate"]))
+            else:
+                await self.bot.send_message(self.text_channel, ":ballot_box_with_check: Playback rate set to {}Hz.".format(self.config["playback_rate"]))
+
+    async def command_voteskip(self, args):
+        self.text_channel = args["message"].channel
+        self.config["voteskip_enabled"] = not self.config["voteskip_enabled"]
+        await self.bot.send_message(args["channel"], ":ballot_box_with_check: Voteskip enabled status set to {}.".format(self.config["voteskip_enabled"]))
+
+    async def command_ffmpegopts(self, args):
+        self.text_channel = args["message"].channel
+        if len(args["command_args"])>=2:
+            if args["command_args"][1] == "NONE":
+                self.config["ffmpeg_options"] = ""
+            else:
+                self.config["ffmpeg_options"] = " ".join(args["command_args"][1:])
+            await self.bot.send_message(self.text_channel, ":ballot_box_with_check: FFMPEG options updated")
