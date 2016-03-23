@@ -7,3 +7,11 @@ class PluginNotFoundException(Exception):
 
 class MultiplePluginsFoundException(Exception):
     pass
+
+
+class CommandNotFoundException(Exception):
+    pass
+
+
+class MultpleCommandsFoundException(Exception):
+    pass

@@ -2,6 +2,7 @@ import asyncio
 import logging
 
 from .Permissions import Permission
+from .Exceptions import CommandNotFoundException, MultpleCommandsFoundException
 
 __author__ = 'Riley Flynn (nint8835)'
 
@@ -38,6 +39,21 @@ class CommandRegistry:
 
     def get_info_for_command(self, command):
         return [i for i in self.commands if i["command"] == command]
+
+    def regsiter_command_alias(self, original_command: str, alias: str, alias_plugin_info: dict):
+        commands = self.get_info_for_command(original_command)
+        if len(commands) >= 2:
+            raise MultpleCommandsFoundException("Multiple commands matching the string {} were found when attempting to create the alias {}.".format(original_command, alias))
+        elif len(commands) == 0:
+            raise CommandNotFoundException("No commands found matching the string {} when attempting to create the alias {}.".format(original_command, alias))
+        else:
+            self.register_command(commands[0]["command"],
+                                  commands[0]["description"],
+                                  commands[0]["required_permission"],
+                                  alias_plugin_info,
+                                  commands[0]["handler"])
+            self.logger.debug("New alias registered. Info: {}".format(self.commands[-1]))
+
 
     async def handle_command(self, command_name, args):
         self.logger.debug("Handling command {}.".format(command_name))
