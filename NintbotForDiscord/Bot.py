@@ -68,7 +68,7 @@ class Bot(TokenClient):
                                                    author = message.author,
                                                    channel = message.channel)
 
-        if message.content.startswith(self.config["command_prefix"]):
+        if message.content.startswith(self.config["command_prefix"]) and (message.channel.is_private or message.server.id not in self.config["blacklisted_servers"]):
             command_str = message.content.lstrip(self.config["command_prefix"])
             try:
                 args = shlex.split(command_str)
