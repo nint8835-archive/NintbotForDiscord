@@ -1,6 +1,7 @@
 import discord
 import asyncio
 import shlex
+import logging
 
 from .Plugin import BasePlugin
 from .EventManager import EventManager
@@ -8,16 +9,16 @@ from .PluginManager import PluginManager
 from .Enums import EventTypes
 from .CommandRegistry import CommandRegistry
 from .TokenClient import TokenClient
-import logging
+from . import __version__
 
 __author__ = 'Riley Flynn (nint8835)'
 
 
 class Bot(TokenClient):
-    VERSION = "03.23.2016.3"
 
     def __init__(self, config: dict, loop: asyncio.BaseEventLoop = None):
         super(Bot, self).__init__(loop = loop)
+        self.VERSION = __version__
         self.config = config
         self.logger = logging.getLogger("NintbotForDiscord")
 
