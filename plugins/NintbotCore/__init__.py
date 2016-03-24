@@ -1,12 +1,12 @@
-import traceback
 from NintbotForDiscord.Enums import EventTypes
 from NintbotForDiscord.Plugin import BasePlugin
 from NintbotForDiscord.Permissions import create_match_any_permission_group, Permission
 from NintbotForDiscord.Permissions.Special import Owner
 from NintbotForDiscord.Permissions.Text import ManageMessages
-from discord.errors import HTTPException, NotFound
+
 from discord import ChannelType, Status, Game
 
+import traceback
 import math
 import os
 import json

@@ -1,8 +1,6 @@
 import os
 import json
-import traceback
 
-from NintbotForDiscord.Enums import EventTypes
 from NintbotForDiscord.Permissions import Permission
 from NintbotForDiscord.Permissions.Special import Owner
 from NintbotForDiscord.Plugin import BasePlugin

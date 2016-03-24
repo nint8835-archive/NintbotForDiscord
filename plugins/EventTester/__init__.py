@@ -1,7 +1,5 @@
-from discord import Game
 from NintbotForDiscord.Enums import EventTypes
 from NintbotForDiscord.Plugin import BasePlugin
-import asyncio
 __author__ = 'Riley Flynn (nint8835)'
 
 

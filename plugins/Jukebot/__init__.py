@@ -10,11 +10,10 @@ import logging
 import youtube_dl
 from googleapiclient.discovery import build
 
-from discord import ClientException, Channel, ChannelType, Member
+from discord import ClientException, ChannelType, Member
 from discord.voice_client import ProcessPlayer
 from discord.opus import load_opus
 
-from NintbotForDiscord.Enums import EventTypes
 from NintbotForDiscord.Plugin import BasePlugin
 from NintbotForDiscord.Permissions import Permission, create_match_any_permission_group
 from NintbotForDiscord.Permissions.Voice import MuteMembers

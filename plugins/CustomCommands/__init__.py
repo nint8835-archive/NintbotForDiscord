@@ -1,4 +1,3 @@
-from NintbotForDiscord.Enums import EventTypes
 from NintbotForDiscord.Plugin import BasePlugin
 from NintbotForDiscord.Permissions import Permission, create_match_any_permission_group
 from NintbotForDiscord.Permissions.Text import ManageMessages

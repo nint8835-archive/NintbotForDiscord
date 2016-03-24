@@ -1,7 +1,6 @@
 import random
 import traceback
 
-from NintbotForDiscord.Enums import EventTypes
 from NintbotForDiscord.Permissions.Special import Owner
 from NintbotForDiscord.Permissions.Text import ManageMessages
 from NintbotForDiscord.Plugin import BasePlugin

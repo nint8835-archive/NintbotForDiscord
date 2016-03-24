@@ -1,16 +1,16 @@
 import traceback
-
+import pymarkovchain
+import os
+import json
+import logging
 import asyncio
 import requests
+
 from NintbotForDiscord.Enums import EventTypes
 from NintbotForDiscord.Plugin import BasePlugin
 from NintbotForDiscord.Permissions import Permission, create_match_any_permission_group
 from NintbotForDiscord.Permissions.Text import ManageMessages
 from NintbotForDiscord.Permissions.Special import Owner
-import pymarkovchain
-import os
-import json
-import logging
 
 __author__ = 'Riley Flynn (nint8835)'
 

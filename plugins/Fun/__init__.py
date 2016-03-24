@@ -1,21 +1,18 @@
 import traceback
 from operator import itemgetter
-
 import aiohttp
 import random
 import praw
-
 import requests
+import os
+import json
 
 from discord import Colour, Game
 
-from NintbotForDiscord.Enums import EventTypes
 from NintbotForDiscord.Permissions import Permission, create_match_any_permission_group
 from NintbotForDiscord.Permissions.General import ManageRoles
 from NintbotForDiscord.Permissions.Special import Owner
 from NintbotForDiscord.Plugin import BasePlugin
-import os
-import json
 
 __author__ = 'Riley Flynn (nint8835)'
 
