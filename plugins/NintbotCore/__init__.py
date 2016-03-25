@@ -154,7 +154,7 @@ class Plugin(BasePlugin):
     async def command_info(self, args):
         await self.bot.send_message(args["channel"],
                                     INFO_STRING.format(self.bot.VERSION,
-                                                       len(self.bot.servers),
+                                                       len([i for i in self.bot.servers if i not in self.bot.config["blacklisted_servers"]]),
                                                        len(self.get_all_channels()),
                                                        len(self.get_all_text_channels()),
                                                        len(self.get_all_voice_channels()),
