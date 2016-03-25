@@ -31,7 +31,7 @@ class Plugin(BasePlugin):
         super(Plugin, self).__init__(bot_instance, plugin_data, folder)
         self.praw = praw.Reddit(user_agent = "Fun plugin V{} for NintbotForDiscord - Developed by /u/nint8835".format(self.plugin_data["plugin_version"]))
         self.praw.get_random_subreddit(True)
-        self.role_color_perm = create_match_any_permission_group([ManageRoles(), Owner(self.bot)])
+        self.admin_perm = create_match_any_permission_group([ManageRoles(), Owner(self.bot)])
         self.bot.CommandRegistry.register_command("weather",
                                                   "Looks up the weather for a specified location on openweathermap.",
                                                   Permission(),
@@ -44,7 +44,7 @@ class Plugin(BasePlugin):
                                                   self.command_8ball)
         self.bot.CommandRegistry.register_command("setavatar",
                                                   "Changes the bot's avatar.",
-                                                  Permission(),
+                                                  Owner(self.bot),
                                                   plugin_data,
                                                   self.command_setavatar)
         self.bot.CommandRegistry.register_command("avatar",
@@ -59,7 +59,7 @@ class Plugin(BasePlugin):
                                                   self.command_decide)
         self.bot.CommandRegistry.register_command("role_color",
                                                   "Sets the color for a role to a hex color value.",
-                                                  self.role_color_perm,
+                                                  self.admin_perm,
                                                   plugin_data,
                                                   self.command_role_color)
         self.bot.CommandRegistry.register_command("name",
@@ -69,7 +69,7 @@ class Plugin(BasePlugin):
                                                   self.command_name)
         self.bot.CommandRegistry.register_command("setgame",
                                                   "Sets the game the bot is displayed as playing.",
-                                                  Permission(),
+                                                  Owner(self.bot),
                                                   plugin_data,
                                                   self.command_setgame)
         self.bot.CommandRegistry.register_command("topgames",

@@ -1,7 +1,7 @@
 {
   "plugin_name": "Fun",
   "plugin_developer": "nint8835",
-  "plugin_version": "1.13.1",
+  "plugin_version": "1.13.2",
   "module_name": "Fun",
   "main_file": "__init__.py"
 }
