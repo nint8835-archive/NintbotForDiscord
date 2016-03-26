@@ -42,7 +42,15 @@ class Plugin(BasePlugin):
                     traceback.print_exc(5)
         elif len(args["command_args"]) == 2:
             quotes = [quote["msg"] for quote in self.quotes.data if quote["author"].count(args["command_args"][1]) >= 1]
-            # print(quotes)
+            message = ""
+            for quote in quotes:
+                if len(message) + len(quote) >= 2000:
+                    await self.bot.send_message(args["channel"], message)
+                    message = quote
+                elif message == "":
+                    message = quote
+                else:
+                    message += "\n{}".format(quote)
             await self.bot.send_message(args["channel"], "\n".join(quotes))
         if len(args["command_args"]) == 1:
             quote = random.choice(self.quotes.select(SelectionMode.ALL).rows)
