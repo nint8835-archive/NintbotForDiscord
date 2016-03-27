@@ -25,6 +25,7 @@ ID: {}
 Discriminator: {}
 Avatar: {}
 Created: {}
+Roles: {}
 ```"""
 
 
@@ -254,7 +255,8 @@ class Plugin(BasePlugin):
                                                                                      user.id,
                                                                                      user.discriminator,
                                                                                      user.avatar_url,
-                                                                                     user.created_at))
+                                                                                     user.created_at,
+                                                                                     ", ".join([role.name for role in user.roles if role.name != "@everyone"])))
 
     async def command_stop(self, args):
         await self.bot.logout()
