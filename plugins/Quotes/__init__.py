@@ -44,14 +44,16 @@ class Plugin(BasePlugin):
             quotes = [quote["msg"] for quote in self.quotes.data if quote["author"].count(args["command_args"][1]) >= 1]
             message = ""
             for quote in quotes:
-                if len(message) + len(quote) >= 2000:
+                print(len(message) + 2 + len(quote))
+                if len(message) + 2 + len(quote) >= 2000:
                     await self.bot.send_message(args["channel"], message)
                     message = quote
                 elif message == "":
                     message = quote
                 else:
                     message += "\n{}".format(quote)
-            await self.bot.send_message(args["channel"], "\n".join(quotes))
+            if message != "":
+                await self.bot.send_message(args["channel"], message)
         if len(args["command_args"]) == 1:
             quote = random.choice(self.quotes.select(SelectionMode.ALL).rows)
             await self.bot.send_message(args["channel"], "\"{}\" {}".format(quote["msg"], quote["author"]))
