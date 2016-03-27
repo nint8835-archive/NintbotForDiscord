@@ -44,7 +44,6 @@ class Plugin(BasePlugin):
             quotes = [quote["msg"] for quote in self.quotes.data if quote["author"].count(args["command_args"][1]) >= 1]
             message = ""
             for quote in quotes:
-                print(len(message) + 2 + len(quote))
                 if len(message) + 2 + len(quote) >= 2000:
                     await self.bot.send_message(args["channel"], message)
                     message = quote
