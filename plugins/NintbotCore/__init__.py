@@ -240,7 +240,7 @@ class Plugin(BasePlugin):
         for command in self.bot.CommandRegistry.get_available_commands_for_user(args["author"]):
             if message_str == "":
                 message_str += "```"
-            if len(message_str)>=1700:
+            if len(message_str) + len("{}{}: {}\n".format(self.bot.config["command_prefix"], command["command"], command["description"])) >= 1997:
                 await self.bot.send_message(args["author"], message_str + "```")
                 message_str = "```"
             message_str += "{}{}: {}\n".format(self.bot.config["command_prefix"], command["command"], command["description"])
