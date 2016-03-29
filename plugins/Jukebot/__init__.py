@@ -15,7 +15,7 @@ from discord.voice_client import ProcessPlayer
 from discord.opus import load_opus
 
 from NintbotForDiscord.Plugin import BasePlugin
-from NintbotForDiscord.Permissions import Permission, create_match_any_permission_group
+from NintbotForDiscord.Permissions import Permission, create_match_any_permission_group, create_permission_group
 from NintbotForDiscord.Permissions.Voice import MuteMembers
 from NintbotForDiscord.Permissions.Special import Owner
 
@@ -82,7 +82,8 @@ class Plugin(BasePlugin):
         super(Plugin, self).__init__(bot_instance, plugin_data, folder)
         with open(os.path.join(folder, "config.json")) as f:
             self.config = json.load(f)
-        self.admin = create_match_any_permission_group([Owner(self.bot), MuteMembers(), InWhitelistedServer(self)])
+        self.admin = create_match_any_permission_group([Owner(self.bot), MuteMembers()])
+        self.admin = create_permission_group([self.admin, InWhitelistedServer(self)])
 
         self.bot.CommandRegistry.register_command("play",
                                                   "Adds a song to the song queue.",
