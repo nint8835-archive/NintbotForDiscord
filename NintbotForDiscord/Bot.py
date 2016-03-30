@@ -9,6 +9,7 @@ from .PluginManager import PluginManager
 from .Enums import EventTypes
 from .CommandRegistry import CommandRegistry
 from .TokenClient import TokenClient
+from .TimedTaskManager import TimedTaskManager
 from . import __version__
 
 __author__ = 'Riley Flynn (nint8835)'
@@ -38,6 +39,9 @@ class Bot(TokenClient):
         self.logger.debug("Done.")
         self.logger.debug("Creating CommadRegistry...")
         self.CommandRegistry = CommandRegistry(self)
+        self.logger.debug("Done")
+        self.logger.debug("Creating TimedTaskManager...")
+        self.TimedTaskManager = TimedTaskManager(self)
         self.logger.debug("Done")
         self.logger.debug("Loading plugins...")
         self.PluginManager.load_plugins()
