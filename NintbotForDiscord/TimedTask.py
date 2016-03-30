@@ -38,8 +38,8 @@ class RepeatingTimedTaskWrapper(RepeatingTimedTask):
         return self.task.check_task()
 
     async def execute_task(self):
-        await self.task.execute_task()
         await super(RepeatingTimedTaskWrapper, self).execute_task()
+        await self.task.execute_task()
 
 
 class MessageTimedTask(TimedTask):
