@@ -27,6 +27,21 @@ class RepeatingTimedTask(TimedTask):
         self.task_manager.add_task(self)
 
 
+class RepeatingTimedTaskWrapper(RepeatingTimedTask):
+
+    def __init__(self, task, task_manager):
+        super(RepeatingTimedTaskWrapper, self).__init__(task_manager, task.delay)
+        self.task = task
+        self.task_manager = task_manager
+
+    def check_task(self):
+        return self.task.check_task()
+
+    async def execute_task(self):
+        await self.task.execute_task()
+        await super(RepeatingTimedTaskWrapper, self).execute_task()
+
+
 class MessageTimedTask(TimedTask):
 
     def __init__(self, destination, message, bot_instance, delay=30):
