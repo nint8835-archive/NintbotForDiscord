@@ -28,6 +28,19 @@ Created: {}
 Roles: {}
 ```"""
 
+SERVER_INFO_STRING = """```Server name: {}
+Roles:
+    {}
+Region: {}
+Members: {}
+Channels:
+    {}
+Icon: {}
+ID: {}
+Owner: {}
+Created at: {}
+```"""
+
 
 class Plugin(BasePlugin):
     def __init__(self, bot_instance, plugin_data, folder):
@@ -96,6 +109,11 @@ class Plugin(BasePlugin):
                                                   Permission(),
                                                   plugin_data,
                                                   self.command_invitelink)
+        self.bot.CommandRegistry.register_command("server",
+                                                  "Gets information for the server.",
+                                                  Permission(),
+                                                  plugin_data,
+                                                  self.command_server)
 
         with open(os.path.join(folder, "config.json")) as f:
             self.config = json.load(f)
@@ -263,6 +281,21 @@ class Plugin(BasePlugin):
 
     async def command_invitelink(self, args):
         await self.bot.send_message(args["channel"], "Invite the bot to your server using the following link: https://discordapp.com/oauth2/authorize?&client_id={}&scope=bot".format(self.bot.config["app_id"]))
+
+    async def command_server(self, args):
+        if not args["channel"].is_private:
+            await self.bot.send_message(args["channel"],
+                                        SERVER_INFO_STRING.format(
+                                            args["channel"].server.name,
+                                            "\n\t".join([role.name for role in args["channel"].server.roles if role.name != "@everyone"]),
+                                            args["channel"].server.region,
+                                            args["channel"].server.member_count,
+                                            "\n\t".join(["{} ({})".format(channel.name, channel.type) for channel in args["channel"].server.channels]),
+                                            args["channel"].server.icon_url,
+                                            args["channel"].server.id,
+                                            args["channel"].server.owner.name,
+                                            args["channel"].server.created_at
+                                        ))
 
     async def on_ready(self, args):
         await self.bot.change_status(game = Game(name = "Nintbot V{}".format(self.bot.VERSION)))
