@@ -11,11 +11,24 @@ class TaskSchedulerTask(ScheduledTask):
 
     def construct_dict_obj(self):
         return {"type": "generic",
+                "created": self.created,
                 "delay": self.delay}
 
     async def execute_task(self):
         await ScheduledTask.execute_task(self)
         self.plugin.tasks.remove(self.construct_dict_obj())
+
+
+class RepeatingTaskSchedulerTask(TaskSchedulerTask, RepeatingScheduledTask):
+
+    def __init__(self, plugin_instance, scheduler, delay = 30):
+        TaskSchedulerTask.__init__(self, plugin_instance, delay)
+        RepeatingScheduledTask.__init__(self, scheduler, delay)
+
+    async def execute_task(self):
+        await TaskSchedulerTask.execute_task(self)
+        await RepeatingScheduledTask.execute_task(self)
+        self.plugin.tasks.append(self.construct_dict_obj())
 
 
 class ScheduledMessage(TaskSchedulerTask, MessageScheduledTask):
@@ -33,3 +46,14 @@ class ScheduledMessage(TaskSchedulerTask, MessageScheduledTask):
     async def execute_task(self):
         await TaskSchedulerTask.execute_task(self)
         await MessageScheduledTask.execute_task(self)
+
+
+class RepeatingScheduledMessage(ScheduledMessage, RepeatingTaskSchedulerTask):
+
+    def __init__(self, destination, message, bot_instance, plugin_instance, scheduler, delay = 30):
+        ScheduledMessage.__init__(self, destination, message, bot_instance, plugin_instance, delay)
+        RepeatingTaskSchedulerTask.__init__(self, plugin_instance, scheduler, delay)
+
+    async def execute_task(self):
+        await ScheduledMessage.execute_task(self)
+        await RepeatingTaskSchedulerTask.execute_task(self)

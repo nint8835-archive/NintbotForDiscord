@@ -5,7 +5,7 @@ from discord import Object
 
 from NintbotForDiscord.Permissions.Special import Owner
 from NintbotForDiscord.Plugin import BasePlugin
-from plugins.TaskScheduler.CustomTasks import ScheduledMessage
+from plugins.TaskScheduler.CustomTasks import ScheduledMessage, RepeatingScheduledMessage
 
 __author__ = 'Riley Flynn (nint8835)'
 
@@ -36,11 +36,22 @@ class Plugin(BasePlugin):
     def add_tasks(self):
         for task in self.tasks:
             if task["type"] == "message":
-                self.bot.Scheduler.add_task(ScheduledMessage(Object(task["destination"]), task["message"], self.bot, self, task["delay"]))
+                self.bot.Scheduler.add_task(ScheduledMessage(Object(task["destination"]),
+                                                             task["message"],
+                                                             self.bot,
+                                                             self,
+                                                             task["delay"]))
+            elif task["type"] == "message-repeating":
+                self.bot.Scheduler.add_task(RepeatingScheduledMessage(Object(task["destination"]),
+                                                                      task["message"],
+                                                                      self.bot,
+                                                                      self,
+                                                                      self.bot.Scheduler,
+                                                                      task["delay"]))
 
     async def command_testtask(self, args):
-        self.tasks.append({"type": "message",
+        self.tasks.append({"type": "message-repeating",
                            "destination": args["channel"].id,
                            "message": "I'm a scheduled message. Hello!",
-                           "delay": 5})
+                           "delay": 15})
         self.add_tasks()
