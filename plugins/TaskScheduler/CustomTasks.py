@@ -16,7 +16,10 @@ class TaskSchedulerTask(ScheduledTask):
 
     async def execute_task(self):
         await ScheduledTask.execute_task(self)
-        self.plugin.tasks.remove(self.construct_dict_obj())
+        try:
+            self.plugin.tasks.remove(self.construct_dict_obj())
+        except ValueError:
+            pass
 
 
 class RepeatingTaskSchedulerTask(TaskSchedulerTask, RepeatingScheduledTask):
@@ -53,6 +56,12 @@ class RepeatingScheduledMessage(ScheduledMessage, RepeatingTaskSchedulerTask):
     def __init__(self, destination, message, bot_instance, plugin_instance, scheduler, delay = 30):
         ScheduledMessage.__init__(self, destination, message, bot_instance, plugin_instance, delay)
         RepeatingTaskSchedulerTask.__init__(self, plugin_instance, scheduler, delay)
+
+    def construct_dict_obj(self):
+        return {"type": "message-repeating",
+                "destination": self.destination.id,
+                "message": self.message,
+                "delay": self.delay}
 
     async def execute_task(self):
         await ScheduledMessage.execute_task(self)
