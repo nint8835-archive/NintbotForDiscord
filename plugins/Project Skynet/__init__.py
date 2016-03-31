@@ -73,5 +73,3 @@ class Plugin(BasePlugin):
             message_to_train = " ".join(args["command_args"][1:-1])
             value = bool(args["command_args"][-1])
             self.train(message_to_train, value)
-
-

@@ -31,4 +31,3 @@ class Plugin(BasePlugin):
             await self.bot.send_message(args["channel"], submission.url.replace(".gifv", ".gif"))
         else:
             await self.bot.send_message(args["channel"], "{}\n{}".format(submission.title, submission.selftext))
-

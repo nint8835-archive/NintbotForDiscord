@@ -1,6 +1,7 @@
 import asyncio
 import discord
 
+
 # Temporary patch by LeoV
 class TokenClient(discord.Client):
 
