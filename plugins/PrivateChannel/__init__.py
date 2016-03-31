@@ -77,7 +77,8 @@ class Plugin(BasePlugin):
                                                   "server_id": args["message"].server.id,
                                                   "role_id": role.id,
                                                   "owner_id": args["author"].id,
-                                                  "name": name})
+                                                  "name": name,
+                                                  "admins": [args["author"].id]})
 
                             await self.bot.add_roles(args["author"], role)
 

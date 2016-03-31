@@ -3,7 +3,7 @@ import asyncio
 __author__ = 'Riley Flynn (nint8835)'
 
 
-class TimedTaskManager:
+class Scheduler:
 
     def __init__(self, bot_instance):
         self.bot = bot_instance
