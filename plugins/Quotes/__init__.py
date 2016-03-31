@@ -1,14 +1,14 @@
 import random
 import traceback
+import os
+import datetime
 
 from NintbotForDiscord.Permissions.Special import Owner
 from NintbotForDiscord.Permissions.Text import ManageMessages
 from NintbotForDiscord.Plugin import BasePlugin
 from NintbotForDiscord.Permissions import Permission, create_match_any_permission_group
 
-import os
-import sys
-import datetime
+from libraries.JSONDB import JSONDatabase, SelectionMode
 __author__ = 'Riley Flynn (nint8835)'
 
 
@@ -22,9 +22,6 @@ class Plugin(BasePlugin):
                                                   Permission(),
                                                   plugin_data,
                                                   self.on_command)
-        sys.path.append(os.path.join(folder))
-        from JSONDB import JSONDatabase, SelectionMode
-        global JSONDatabase, SelectionMode
         self.quotes = JSONDatabase(os.path.join(self.folder, "quotes.json"))
 
     async def on_command(self, args):

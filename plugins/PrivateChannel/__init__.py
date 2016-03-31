@@ -1,16 +1,15 @@
 import json
 import random
 import traceback
-
 import discord
 import logging
+import os
 
 from NintbotForDiscord.Enums import EventTypes
 from NintbotForDiscord.Plugin import BasePlugin
 from NintbotForDiscord.Permissions import Permission
 
-import os
-import sys
+from libraries.JSONDB import JSONDatabase, SelectionMode
 __author__ = 'Riley Flynn (nint8835)'
 
 
@@ -29,9 +28,6 @@ class Plugin(BasePlugin):
         self.bot.register_handler(EventTypes.ChannelDeleted, self.on_channel_deleted, self)
         with open(os.path.join(folder, "config.json")) as f:
             self.config = json.load(f)
-        sys.path.append(os.path.join(folder))
-        from JSONDB import JSONDatabase, SelectionMode
-        global JSONDatabase, SelectionMode
         with open(os.path.join(self.folder, "adjectives")) as f:
             self.adjectives = f.readlines()
         with open(os.path.join(self.folder, "animals")) as f:

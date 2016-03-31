@@ -3,8 +3,10 @@ from NintbotForDiscord.Permissions import Permission, create_match_any_permissio
 from NintbotForDiscord.Permissions.Text import ManageMessages
 from NintbotForDiscord.Permissions.Special import Owner
 
+from libraries.JSONDB import JSONDatabase, SelectionMode
+
 import os
-import sys
+
 __author__ = 'Riley Flynn (nint8835)'
 
 
@@ -13,9 +15,6 @@ class Plugin(BasePlugin):
     def __init__(self, bot_instance, plugin_data, folder):
         super(Plugin, self).__init__(bot_instance, plugin_data, folder)
         self.manage_perm = create_match_any_permission_group([ManageMessages(), Owner(self.bot)])
-        sys.path.append(os.path.join(folder))
-        from JSONDB import JSONDatabase, SelectionMode
-        global JSONDatabase, SelectionMode
         self.commands = JSONDatabase(os.path.join(self.folder, "commands.json"))
         self.refresh_custom_registry()
 
