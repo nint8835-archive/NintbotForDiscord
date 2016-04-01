@@ -1,5 +1,7 @@
 import time
 
+from discord.utils import find
+
 __author__ = 'Riley Flynn (nint8835)'
 
 
@@ -56,10 +58,26 @@ class MessageScheduledTask(ScheduledTask):
 
 class RepeatingMessageScheduledTask(RepeatingScheduledTask, MessageScheduledTask):
 
-    def __init__(self, destination, message, bot_instance, scheduler, delay=30):
+    def __init__(self, destination_id, message, bot_instance, scheduler, delay=30):
         RepeatingScheduledTask.__init__(self, scheduler, delay)
-        MessageScheduledTask.__init__(self, destination, message, bot_instance, delay)
+        MessageScheduledTask.__init__(self, destination_id, message, bot_instance, delay)
 
     async def execute_task(self):
         await RepeatingMessageScheduledTask.execute_task(self)
         await MessageScheduledTask.execute_task(self)
+
+
+class AddRoleScheduledTask(ScheduledTask):
+
+    def __init__(self, user_id, server_id, role_id, bot_instance, delay=30):
+        ScheduledTask.__init__(self, delay)
+        self.user_id = user_id
+        self.server_id = server_id
+        self.role_id = role_id
+        self.bot = bot_instance
+
+    async def execute_task(self):
+        await ScheduledTask.execute_task(self)
+        server = find(lambda s: s.id == self.server_id, self.bot.servers)
+        role = find(lambda r: r.id == self.role_id, server.roles)
+        await self.bot.add_roles(server.get_member(self.user_id), role)
