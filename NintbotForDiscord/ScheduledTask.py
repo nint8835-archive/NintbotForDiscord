@@ -81,3 +81,19 @@ class AddRoleScheduledTask(ScheduledTask):
         server = find(lambda s: s.id == self.server_id, self.bot.servers)
         role = find(lambda r: r.id == self.role_id, server.roles)
         await self.bot.add_roles(server.get_member(self.user_id), role)
+
+
+class RemoveRoleScheduledTask(ScheduledTask):
+
+    def __init__(self, user_id, server_id, role_id, bot_instance, delay=30):
+        ScheduledTask.__init__(self, delay)
+        self.user_id = user_id
+        self.server_id = server_id
+        self.role_id = role_id
+        self.bot = bot_instance
+
+    async def execute_task(self):
+        await ScheduledTask.execute_task(self)
+        server = find(lambda s: s.id == self.server_id, self.bot.servers)
+        role = find(lambda r: r.id == self.role_id, server.roles)
+        await self.bot.remove_roles(server.get_member(self.user_id), role)
