@@ -26,7 +26,7 @@ class RepeatingTaskSchedulerTask(TaskSchedulerTask, RepeatingScheduledTask):
 
     def __init__(self, plugin_instance, scheduler, delay = 30):
         TaskSchedulerTask.__init__(self, plugin_instance, delay)
-        RepeatingScheduledTask.__init__(self, scheduler, delay)
+        RepeatingScheduledTask.__init__(self, scheduler, self.plugin.plugin_data, delay)
 
     async def execute_task(self):
         await TaskSchedulerTask.execute_task(self)

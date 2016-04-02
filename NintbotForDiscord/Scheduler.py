@@ -14,11 +14,17 @@ class Scheduler:
         while not self.bot.is_closed:
 
             for task in self.tasks[:]:
-                if task.check_task():
+                if task["task"].check_task():
                     self.tasks.remove(task)
-                    await task.execute_task()
+                    await task["task"].execute_task()
 
             await asyncio.sleep(1)
 
-    def add_task(self, task_instance):
-        self.tasks.append(task_instance)
+    def add_task(self, task_instance, plugin_info):
+        self.tasks.append({"task": task_instance,
+                           "plugin": plugin_info})
+
+    def remove_tasks_for_plugin(self, plugin_info):
+        for task in self.tasks[:]:
+            if task["plugin"] == plugin_info:
+                self.tasks.remove(plugin_info)

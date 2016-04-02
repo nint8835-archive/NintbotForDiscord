@@ -1,7 +1,7 @@
 {
   "plugin_name": "TaskScheduler",
   "plugin_developer": "nint8835",
-  "plugin_version": "1.1.1",
+  "plugin_version": "1.1.2",
   "module_name": "TaskScheduler",
   "main_file": "__init__.py"
 }

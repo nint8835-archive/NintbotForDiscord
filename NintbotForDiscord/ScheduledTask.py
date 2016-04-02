@@ -20,19 +20,20 @@ class ScheduledTask:
 
 class RepeatingScheduledTask(ScheduledTask):
 
-    def __init__(self, scheduler, delay=30):
+    def __init__(self, scheduler, plugin_info, delay=30):
         ScheduledTask.__init__(self, delay)
         self.scheduler = scheduler
+        self.plugin_info = plugin_info
 
     async def execute_task(self):
         self.created = time.time()
-        self.scheduler.add_task(self)
+        self.scheduler.add_task(self, self.plugin_info)
 
 
 class RepeatingScheduledTaskWrapper(RepeatingScheduledTask):
 
-    def __init__(self, task, scheduler):
-        RepeatingScheduledTask.__init__(self, scheduler, task.delay)
+    def __init__(self, task, plugin_info, scheduler):
+        RepeatingScheduledTask.__init__(self, scheduler, plugin_info, task.delay)
         self.task = task
         self.scheduler = scheduler
 
@@ -58,8 +59,8 @@ class MessageScheduledTask(ScheduledTask):
 
 class RepeatingMessageScheduledTask(RepeatingScheduledTask, MessageScheduledTask):
 
-    def __init__(self, destination_id, message, bot_instance, scheduler, delay=30):
-        RepeatingScheduledTask.__init__(self, scheduler, delay)
+    def __init__(self, destination_id, message, bot_instance, scheduler, plugin_info, delay=30):
+        RepeatingScheduledTask.__init__(self, scheduler, plugin_info, delay)
         MessageScheduledTask.__init__(self, destination_id, message, bot_instance, delay)
 
     async def execute_task(self):

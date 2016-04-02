@@ -40,14 +40,16 @@ class Plugin(BasePlugin):
                                                              task["message"],
                                                              self.bot,
                                                              self,
-                                                             task["delay"]))
+                                                             task["delay"]),
+                                            self.plugin_data)
             elif task["type"] == "message-repeating":
                 self.bot.Scheduler.add_task(RepeatingScheduledMessage(Object(task["destination"]),
                                                                       task["message"],
                                                                       self.bot,
                                                                       self,
                                                                       self.bot.Scheduler,
-                                                                      task["delay"]))
+                                                                      task["delay"]),
+                                            self.plugin_data)
 
     async def command_testtask(self, args):
         self.tasks.append({"type": "message-repeating",
