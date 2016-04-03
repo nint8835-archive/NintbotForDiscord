@@ -144,7 +144,7 @@ class Plugin(BasePlugin):
 
     def get_all_voice_channels(self):
         channels = []
-        for server in [i for i in self.bot.servers if i.id not in self.bot.config["blacklisted_servers"]]:
+        for server in self.bot.servers:
             channels += [channel for channel in server.channels if channel.type == ChannelType.voice]
         return channels
 
@@ -165,7 +165,7 @@ class Plugin(BasePlugin):
 
     def get_all_roles(self):
         roles = []
-        for server in [i for i in self.bot.servers if i.id not in self.bot.config["blacklisted_servers"]]:
+        for server in self.bot.servers:
             for role in server.roles:
                 roles.append(role)
         return roles
@@ -173,7 +173,7 @@ class Plugin(BasePlugin):
     async def command_info(self, args):
         await self.bot.send_message(args["channel"],
                                     INFO_STRING.format(self.bot.VERSION,
-                                                       len([i for i in self.bot.servers if i.id not in self.bot.config["blacklisted_servers"]]),
+                                                       len(self.bot.servers),
                                                        len(self.get_all_channels()),
                                                        len(self.get_all_text_channels()),
                                                        len(self.get_all_voice_channels()),
