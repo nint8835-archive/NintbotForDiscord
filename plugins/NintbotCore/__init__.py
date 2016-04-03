@@ -132,13 +132,13 @@ class Plugin(BasePlugin):
 
     def get_all_channels(self):
         channels = []
-        for server in [i for i in self.bot.servers if i.id not in self.bot.config["blacklisted_servers"]]:
+        for server in self.bot.servers:
             channels += server.channels
         return channels
 
     def get_all_text_channels(self):
         channels = []
-        for server in [i for i in self.bot.servers if i.id not in self.bot.config["blacklisted_servers"]]:
+        for server in self.bot.servers:
             channels += [channel for channel in server.channels if channel.type == ChannelType.text]
         return channels
 
@@ -150,7 +150,7 @@ class Plugin(BasePlugin):
 
     def get_all_users(self):
         users = []
-        for server in [i for i in self.bot.servers if i.id not in self.bot.config["blacklisted_servers"]]:
+        for server in self.bot.servers:
             for user in server.members:
                 if not any([user.id == i.id for i in users]):
                     users.append(user)
