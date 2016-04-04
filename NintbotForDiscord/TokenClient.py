@@ -3,6 +3,7 @@ import discord
 
 
 # Temporary patch by LeoV
+# noinspection PyMethodOverriding,PyBroadException
 class TokenClient(discord.Client):
 
     def run(self, token):

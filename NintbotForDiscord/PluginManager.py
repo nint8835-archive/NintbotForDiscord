@@ -2,6 +2,8 @@ import os
 import json
 import importlib.util
 import traceback
+
+from NintbotForDiscord.Plugin import BasePlugin
 from .Exceptions import PluginNotFoundException, MultiplePluginsFoundException
 __author__ = 'Riley Flynn (nint8835)'
 
@@ -12,10 +14,10 @@ class PluginManager:
         self.bot = bot
         self.plugins = []
 
-    def get_plugins_by_name(self, name):
+    def get_plugins_by_name(self, name: str) -> list:
         return [plugin for plugin in self.plugins if plugin["info"]["plugin_name"] == name]
 
-    def get_plugin_by_name(self, name):
+    def get_plugin_by_name(self, name: str) -> dict:
         plugins = self.get_plugins_by_name(name)
         if len(plugins) == 1:
             return plugins[0]
@@ -24,7 +26,7 @@ class PluginManager:
         else:
             raise MultiplePluginsFoundException("{} plugins were found with the name '{}'.".format(len(plugins), name))
 
-    def get_plugin_instance_by_name(self, name):
+    def get_plugin_instance_by_name(self, name: str) -> BasePlugin:
         return self.get_plugin_by_name(name)["instance"]
 
     def load_plugins(self):

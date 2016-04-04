@@ -1,5 +1,6 @@
 import time
 
+import discord
 from discord.utils import find
 
 __author__ = 'Riley Flynn (nint8835)'
@@ -7,7 +8,7 @@ __author__ = 'Riley Flynn (nint8835)'
 
 class ScheduledTask:
 
-    def __init__(self, delay = 30):
+    def __init__(self, delay: int = 30):
         self.created = time.time()
         self.delay = delay
 
@@ -20,7 +21,7 @@ class ScheduledTask:
 
 class RepeatingScheduledTask(ScheduledTask):
 
-    def __init__(self, scheduler, plugin_info, delay=30):
+    def __init__(self, scheduler: "Scheduler", plugin_info: dict, delay: int = 30):
         ScheduledTask.__init__(self, delay)
         self.scheduler = scheduler
         self.plugin_info = plugin_info
@@ -32,7 +33,7 @@ class RepeatingScheduledTask(ScheduledTask):
 
 class RepeatingScheduledTaskWrapper(RepeatingScheduledTask):
 
-    def __init__(self, task, plugin_info, scheduler):
+    def __init__(self, task: ScheduledTask, plugin_info: dict, scheduler: "Scheduler"):
         RepeatingScheduledTask.__init__(self, scheduler, plugin_info, task.delay)
         self.task = task
         self.scheduler = scheduler
@@ -47,7 +48,7 @@ class RepeatingScheduledTaskWrapper(RepeatingScheduledTask):
 
 class MessageScheduledTask(ScheduledTask):
 
-    def __init__(self, destination, message, bot_instance, delay=30):
+    def __init__(self, destination: discord.Object, message: str, bot_instance: "Bot", delay: int = 30):
         ScheduledTask.__init__(self, delay)
         self.destination = destination
         self.message = message
@@ -59,9 +60,15 @@ class MessageScheduledTask(ScheduledTask):
 
 class RepeatingMessageScheduledTask(RepeatingScheduledTask, MessageScheduledTask):
 
-    def __init__(self, destination_id, message, bot_instance, scheduler, plugin_info, delay=30):
+    def __init__(self,
+                 destination: discord.Object,
+                 message: str,
+                 bot_instance: "Bot",
+                 scheduler: "Scheduler",
+                 plugin_info: dict,
+                 delay: int = 30):
         RepeatingScheduledTask.__init__(self, scheduler, plugin_info, delay)
-        MessageScheduledTask.__init__(self, destination_id, message, bot_instance, delay)
+        MessageScheduledTask.__init__(self, destination, message, bot_instance, delay)
 
     async def execute_task(self):
         await RepeatingMessageScheduledTask.execute_task(self)
@@ -70,7 +77,7 @@ class RepeatingMessageScheduledTask(RepeatingScheduledTask, MessageScheduledTask
 
 class AddRoleScheduledTask(ScheduledTask):
 
-    def __init__(self, user_id, server_id, role_id, bot_instance, delay=30):
+    def __init__(self, user_id: str, server_id: str, role_id: str, bot_instance: "Bot", delay: int = 30):
         ScheduledTask.__init__(self, delay)
         self.user_id = user_id
         self.server_id = server_id
@@ -86,7 +93,7 @@ class AddRoleScheduledTask(ScheduledTask):
 
 class RemoveRoleScheduledTask(ScheduledTask):
 
-    def __init__(self, user_id, server_id, role_id, bot_instance, delay=30):
+    def __init__(self, user_id: str, server_id: str, role_id: str, bot_instance: "Bot", delay: int = 30):
         ScheduledTask.__init__(self, delay)
         self.user_id = user_id
         self.server_id = server_id

@@ -1,5 +1,7 @@
 import asyncio
 
+from NintbotForDiscord.ScheduledTask import ScheduledTask
+
 __author__ = 'Riley Flynn (nint8835)'
 
 
@@ -20,11 +22,11 @@ class Scheduler:
 
             await asyncio.sleep(1)
 
-    def add_task(self, task_instance, plugin_info):
+    def add_task(self, task_instance: ScheduledTask, plugin_info: dict):
         self.tasks.append({"task": task_instance,
                            "plugin": plugin_info})
 
-    def remove_tasks_for_plugin(self, plugin_info):
+    def remove_tasks_for_plugin(self, plugin_info: dict):
         for task in self.tasks[:]:
             if task["plugin"] == plugin_info:
                 self.tasks.remove(plugin_info)

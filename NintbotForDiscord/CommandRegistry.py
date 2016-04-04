@@ -1,6 +1,8 @@
 import asyncio
 import logging
 
+import discord
+
 from .Permissions import Permission
 from .Exceptions import CommandNotFoundException, MultpleCommandsFoundException
 
@@ -29,23 +31,25 @@ class CommandRegistry:
             if command["command"] == command_name and command["plugin_info"] == plugin_info:
                 self.commands.remove(command)
 
-    def unregister_all_commands_for_plugin(self, plugin_data):
+    def unregister_all_commands_for_plugin(self, plugin_data: dict):
         for command in self.commands[:]:
             if command["plugin_info"] == plugin_data:
                 self.commands.remove(command)
 
-    def get_available_commands_for_user(self, user):
+    def get_available_commands_for_user(self, user: discord.User):
         return [i for i in self.commands if i["required_permission"].has_permission(user)]
 
-    def get_info_for_command(self, command):
+    def get_info_for_command(self, command: str):
         return [i for i in self.commands if i["command"] == command]
 
     def register_command_alias(self, original_command: str, alias: str, alias_plugin_info: dict):
         commands = self.get_info_for_command(original_command)
         if len(commands) >= 2:
-            raise MultpleCommandsFoundException("Multiple commands matching the string {} were found when attempting to create the alias {}.".format(original_command, alias))
+            raise MultpleCommandsFoundException("Multiple commands matching the string {} were found when attempting to\
+                                                 create the alias {}.".format(original_command, alias))
         elif len(commands) == 0:
-            raise CommandNotFoundException("No commands found matching the string {} when attempting to create the alias {}.".format(original_command, alias))
+            raise CommandNotFoundException("No commands found matching the string {} when attempting to create the alias\
+                                            {}.".format(original_command, alias))
         else:
             self.register_command(alias,
                                   commands[0]["description"],
@@ -54,8 +58,7 @@ class CommandRegistry:
                                   commands[0]["handler"])
             self.logger.debug("New alias registered. Info: {}".format(self.commands[-1]))
 
-
-    async def handle_command(self, command_name, args):
+    async def handle_command(self, command_name: str, args: dict):
         self.logger.debug("Handling command {}.".format(command_name))
         for command in self.commands:
             if command["command"] == command_name:
