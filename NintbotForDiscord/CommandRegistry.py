@@ -12,37 +12,70 @@ __author__ = 'Riley Flynn (nint8835)'
 class CommandRegistry:
 
     def __init__(self, bot):
-        self.commands = []
+        self._commands = []
         self.logger = logging.getLogger("CommandRegistry")
         self.bot = bot
 
     def register_command(self, command: str, description: str, required_perm: Permission, plugin_info: dict, command_handler: classmethod = None):
-        self.commands.append({
+        """
+        Adds a command to the command registry
+        :param command: The command
+        :param description: The command description
+        :param required_perm: The permission required to run the command
+        :param plugin_info: The plugin_data dictionary of the plugin instance
+        :param command_handler: A coroutine that will handle the command
+        """
+        self._commands.append({
             "command": command,
             "description": description,
             "required_permission": required_perm,
             "plugin_info": plugin_info,
             "handler": command_handler
         })
-        self.logger.debug("New command registered. Info: {}".format(self.commands[-1]))
+        self.logger.debug("New command registered. Info: {}".format(self._commands[-1]))
 
     def unregister_command(self, command_name: str, plugin_info: dict):
-        for command in self.commands[:]:
+        """
+        Removes a command from the command registry
+        :param command_name: The name of the command to unregister
+        :param plugin_info: The plugin_data dictionary of the plugin that registered it
+        """
+        for command in self._commands[:]:
             if command["command"] == command_name and command["plugin_info"] == plugin_info:
-                self.commands.remove(command)
+                self._commands.remove(command)
 
     def unregister_all_commands_for_plugin(self, plugin_data: dict):
-        for command in self.commands[:]:
+        """
+        Removes all commands for a plugin from the command registry
+        :param plugin_data: The plugin_data dictionary of the plugin to remove all commands from
+        """
+        for command in self._commands[:]:
             if command["plugin_info"] == plugin_data:
-                self.commands.remove(command)
+                self._commands.remove(command)
 
-    def get_available_commands_for_user(self, user: discord.User):
-        return [i for i in self.commands if i["required_permission"].has_permission(user)]
+    def get_available_commands_for_user(self, user: discord.User) -> list:
+        """
+        Returns all commands a user has access to
+        :param user: The user to return accessible commands for
+        :return: A list of commands the user has access to
+        """
+        return [i for i in self._commands if i["required_permission"].has_permission(user)]
 
-    def get_info_for_command(self, command: str):
-        return [i for i in self.commands if i["command"] == command]
+    def get_info_for_command(self, command: str) -> list:
+        """
+        Returns a list of all commands with specified command
+        :param command: The command to return all results for
+        :return: The list of results for that command
+        """
+        return [i for i in self._commands if i["command"] == command]
 
     def register_command_alias(self, original_command: str, alias: str, alias_plugin_info: dict):
+        """
+        Registers an alias for a command
+        :param original_command: The command to define the alias for
+        :param alias: The alias
+        :param alias_plugin_info: The plugin_data dictionary of the plugin registering the alias
+        """
         commands = self.get_info_for_command(original_command)
         if len(commands) >= 2:
             raise MultpleCommandsFoundException("Multiple commands matching the string {} were found when attempting to\
@@ -56,11 +89,16 @@ class CommandRegistry:
                                   commands[0]["required_permission"],
                                   alias_plugin_info,
                                   commands[0]["handler"])
-            self.logger.debug("New alias registered. Info: {}".format(self.commands[-1]))
+            self.logger.debug("New alias registered. Info: {}".format(self._commands[-1]))
 
     async def handle_command(self, command_name: str, args: dict):
+        """
+        Checks for a command in the command registry, and then runs it
+        :param command_name: The command to run
+        :param args: The argument dictionary to pass to the handler
+        """
         self.logger.debug("Handling command {}.".format(command_name))
-        for command in self.commands:
+        for command in self._commands:
             if command["command"] == command_name:
                 if command["handler"] is not None:
                     if command["required_permission"].has_permission(args["author"]):
