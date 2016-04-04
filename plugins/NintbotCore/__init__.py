@@ -13,6 +13,8 @@ import json
 import re
 import time
 
+from NintbotForDiscord.ScheduledTask import GameUpdateScheduledTask
+
 __author__ = 'Riley Flynn (nint8835)'
 
 INFO_STRING = """```Nintbot version {}
@@ -298,5 +300,5 @@ class Plugin(BasePlugin):
                                         ))
 
     async def on_ready(self, args):
-        await self.bot.change_status(game = Game(name = "Nintbot V{}".format(self.bot.VERSION)))
+        self.bot.Scheduler.add_task(GameUpdateScheduledTask("Nintbot V{}".format(self.bot.VERSION), 10), self.plugin_data)
         self.started_time = time.time()

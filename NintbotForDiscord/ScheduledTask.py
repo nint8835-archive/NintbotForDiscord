@@ -105,3 +105,14 @@ class RemoveRoleScheduledTask(ScheduledTask):
         server = find(lambda s: s.id == self.server_id, self.bot.servers)
         role = find(lambda r: r.id == self.role_id, server.roles)
         await self.bot.remove_roles(server.get_member(self.user_id), role)
+
+
+class GameUpdateScheduledTask(ScheduledTask):
+
+    def __init__(self, game: str, bot: "Bot", delay: int = 30):
+        ScheduledTask.__init__(self, delay)
+        self.game = game
+        self.bot = bot
+
+    async def execute_task(self):
+        await self.bot.change_status(game = discord.Game(name = self.game))
