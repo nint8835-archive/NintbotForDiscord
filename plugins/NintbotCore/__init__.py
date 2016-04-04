@@ -300,5 +300,5 @@ class Plugin(BasePlugin):
                                         ))
 
     async def on_ready(self, args):
-        self.bot.Scheduler.add_task(GameUpdateScheduledTask("Nintbot V{}".format(self.bot.VERSION), 10), self.plugin_data)
+        self.bot.Scheduler.add_task(GameUpdateScheduledTask("Nintbot V{}".format(self.bot.VERSION), self.bot, 10), self.plugin_data)
         self.started_time = time.time()
