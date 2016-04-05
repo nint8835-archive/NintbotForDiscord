@@ -15,9 +15,19 @@ class PluginManager:
         self.plugins = []
 
     def get_plugins_by_name(self, name: str) -> list:
+        """
+        Returns all plugins matching the name
+        :param name: The name to match
+        :return: The list of all plugins matching the name
+        """
         return [plugin for plugin in self.plugins if plugin["info"]["plugin_name"] == name]
 
     def get_plugin_by_name(self, name: str) -> dict:
+        """
+        Returns only one plugin matching the name
+        :param name: The name to match
+        :return: The plugin that matches the name
+        """
         plugins = self.get_plugins_by_name(name)
         if len(plugins) == 1:
             return plugins[0]
@@ -27,9 +37,17 @@ class PluginManager:
             raise MultiplePluginsFoundException("{} plugins were found with the name '{}'.".format(len(plugins), name))
 
     def get_plugin_instance_by_name(self, name: str) -> BasePlugin:
+        """
+        Returns the plugin instance that matches the name
+        :param name: The name to match
+        :return: The plugin instance that matches the name
+        """
         return self.get_plugin_by_name(name)["instance"]
 
     def load_plugins(self):
+        """
+        Loads all plugins from the plugins directory
+        """
         self.plugins = []
         for folder in [os.path.join("plugins", i) for i in os.listdir(os.path.join("plugins")) if os.path.isdir(os.path.join("plugins", i))]:
             if os.path.isfile(os.path.join(folder, "plugin.json")):

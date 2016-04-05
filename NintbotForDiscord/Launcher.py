@@ -12,6 +12,10 @@ class BotLauncher:
         self._bot = Bot(self.config)
 
     def _get_config(self) -> dict:
+        """
+        Returns the config
+        :return: The config (in this case an empty dict)
+        """
         return {}
 
 
@@ -22,6 +26,10 @@ class StreamBotLauncher(BotLauncher):
         super(StreamBotLauncher, self).__init__()
 
     def _get_config(self) -> dict:
+        """
+        Returns the config
+        :return: The config (in this case a dictionary loaded from a I/O stream
+        """
         return json.load(self._stream)
 
 
