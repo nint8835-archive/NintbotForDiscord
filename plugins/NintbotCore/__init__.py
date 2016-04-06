@@ -116,6 +116,11 @@ class Plugin(BasePlugin):
                                                   Permission(),
                                                   plugin_data,
                                                   self.command_server)
+        self.bot.CommandRegistry.register_command("resetgame",
+                                                  "Resets the currently played game to the default one.",
+                                                  Owner(self.bot),
+                                                  plugin_data,
+                                                  self.command_resetgame)
 
         with open(os.path.join(folder, "config.json")) as f:
             self.config = json.load(f)
@@ -299,6 +304,11 @@ class Plugin(BasePlugin):
                                             args["channel"].server.created_at
                                         ))
 
+    async def command_resetgame(self, args):
+        self.bot.Scheduler.add_task(GameUpdateScheduledTask("Nintbot V{}".format(self.bot.VERSION), self.bot, 10),
+                                    self.plugin_data)
+
     async def on_ready(self, args):
-        self.bot.Scheduler.add_task(GameUpdateScheduledTask("Nintbot V{}".format(self.bot.VERSION), self.bot, 10), self.plugin_data)
+        self.bot.Scheduler.add_task(GameUpdateScheduledTask("Nintbot V{}".format(self.bot.VERSION), self.bot, 10),
+                                    self.plugin_data)
         self.started_time = time.time()
