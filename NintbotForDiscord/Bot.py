@@ -133,7 +133,7 @@ class Bot(TokenClient):
         :param before: The message before it was edited
         :param after: The message after it was edited
         """
-        if before.channel.is_private or before.server.id not in self.config["blacklisted_servers"]:
+        if after.channel.is_private or after.server.id not in self.config["blacklisted_servers"]:
             await self.EventManager.dispatch_event(EventTypes.MessageEdited,
                                                    message_before = before,
                                                    message_after = after,
@@ -184,7 +184,7 @@ class Bot(TokenClient):
         :param before: The channel before it was updated
         :param after: The channel after it was updated
         """
-        if before.is_private or before.server.id not in self.config["blacklisted_servers"]:
+        if after.is_private or after.server.id not in self.config["blacklisted_servers"]:
             await self.EventManager.dispatch_event(EventTypes.ChannelUpdated,
                                                    channel_before = before,
                                                    channel_after = after,
@@ -216,7 +216,7 @@ class Bot(TokenClient):
         :param before: The member before the update
         :param after: The member after the update
         """
-        if before.server.id not in self.config["blacklisted_servers"]:
+        if after.server.id not in self.config["blacklisted_servers"]:
             await self.EventManager.dispatch_event(EventTypes.MemberUpdated,
                                                    member_before = before,
                                                    member_after = after,
@@ -249,7 +249,7 @@ class Bot(TokenClient):
         :param before: The member before the update
         :param after: The member after the update
         """
-        if before.server.id not in self.config["blacklisted_servers"]:
+        if after.server.id not in self.config["blacklisted_servers"]:
             await self.EventManager.dispatch_event(EventTypes.MemberVoiceStateUpdated,
                                                    member_before = before,
                                                    member_after = after)
