@@ -118,7 +118,7 @@ class Plugin(BasePlugin):
     async def command_cleanstrings(self, args):
         count = 0
         for item in self.strings[:]:
-            if item == "" or item.startswith("http") or item.startswith("~") or item.count("its ok to accept urself nintbot") >= 1 or item.count("Nathanial is the") >= 1:
+            if item == "" or item.startswith("http") or item.startswith(self.bot.config["command_prefix"]) or item.count("its ok to accept urself nintbot") >= 1 or item.count("Nathanial is the") >= 1:
                 count += 1
                 self.strings.remove(item)
 
