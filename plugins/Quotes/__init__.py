@@ -3,6 +3,8 @@ import traceback
 import os
 import datetime
 
+from pymarkovchain import MarkovChain
+
 from NintbotForDiscord.Permissions.Special import Owner
 from NintbotForDiscord.Permissions.Text import ManageMessages
 from NintbotForDiscord.Plugin import BasePlugin
@@ -23,6 +25,11 @@ class Plugin(BasePlugin):
                                                   plugin_data,
                                                   self.on_command)
         self.quotes = JSONDatabase(os.path.join(self.folder, "quotes.json"))
+        self.markov = MarkovChain()
+        self.generate_chain()
+
+    def generate_chain(self):
+        self.markov.generateDatabase("\n".join([i["msg"] for i in self.quotes.data]))
 
     async def on_command(self, args):
         if len(args["command_args"])>=4:
@@ -35,21 +42,26 @@ class Plugin(BasePlugin):
                                         "author": quote_author,
                                         "added_at": quote_addtime})
                     await self.bot.send_message(args["channel"], ":ballot_box_with_check: New quote added to database.")
+                    self.generate_chain()
                 except:
                     traceback.print_exc(5)
         elif len(args["command_args"]) == 2:
-            quotes = [quote["msg"] for quote in self.quotes.data if quote["author"].count(args["command_args"][1]) >= 1]
-            message = ""
-            for quote in quotes:
-                if len(message) + 2 + len(quote) >= 2000:
+            if args["command_args"][1] != "markov":
+                quotes = [quote["msg"] for quote in self.quotes.data if quote["author"].count(args["command_args"][1]) >= 1]
+                message = ""
+                for quote in quotes:
+                    if len(message) + 2 + len(quote) >= 2000:
+                        await self.bot.send_message(args["channel"], message)
+                        message = quote
+                    elif message == "":
+                        message = quote
+                    else:
+                        message += "\n{}".format(quote)
+                if message != "":
                     await self.bot.send_message(args["channel"], message)
-                    message = quote
-                elif message == "":
-                    message = quote
-                else:
-                    message += "\n{}".format(quote)
-            if message != "":
-                await self.bot.send_message(args["channel"], message)
-        if len(args["command_args"]) == 1:
+            else:
+                await self.bot.send_message(args["channel"], "\"{}\" {}".format(self.markov.generateString(),
+                                                                                random.choice(self.quotes.data)["author"]))
+        elif len(args["command_args"]) == 1:
             quote = random.choice(self.quotes.select(SelectionMode.ALL).rows)
             await self.bot.send_message(args["channel"], "\"{}\" {}".format(quote["msg"], quote["author"]))
