@@ -14,6 +14,7 @@ class Plugin(BasePlugin):
     def __init__(self, bot_instance, plugin_data, folder):
         super(Plugin, self).__init__(bot_instance, plugin_data, folder)
         self.artists = []
+        self.songs = []
         self.chain = MarkovChain()
         self.title_chain = MarkovChain()
 
@@ -29,6 +30,12 @@ class Plugin(BasePlugin):
                                                   plugin_data,
                                                   self.command_reloadlyrics)
 
+        self.bot.CommandRegistry.register_command("songlist",
+                                                  "Gets a list of all songs the bot is basing it's knowledge off of",
+                                                  Permission(),
+                                                  plugin_data,
+                                                  self.command_songlist)
+
         self.load_lyrics()
 
     async def command_lyricchain(self, args):
@@ -39,10 +46,26 @@ class Plugin(BasePlugin):
     async def command_reloadlyrics(self, args):
         self.load_lyrics()
 
+    async def command_songlist(self, args):
+        message = ""
+        for song in self.songs:
+            if len(message) + 2 + len(song) >= 2000:
+                await self.bot.send_message(args["channel"], message)
+                message = song
+            elif message == "":
+                message = song
+            else:
+                message += "\n{}".format(song)
+        if message != "":
+            await self.bot.send_message(args["channel"], message)
+
     def load_lyrics(self):
+        self.artists = []
+        self.songs = []
         lyrics = []
         song_titles = []
         for item in os.listdir(os.path.join(self.folder, "lyrics")):
+            self.songs.append(item)
             with open(os.path.join(self.folder, "lyrics", item)) as f:
                 song_titles.append(item.split("- ")[1])
                 artist = item.split(" -")[0]
