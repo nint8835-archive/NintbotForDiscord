@@ -1,7 +1,7 @@
 {
   "plugin_name": "MarkovLyrics",
   "plugin_developer": "nint8835",
-  "plugin_version": "1.0",
+  "plugin_version": "1.1",
   "module_name": "MarkovLyrics",
   "main_file": "__init__.py"
 }

@@ -9,3 +9,4 @@ plugins/Project Skynet/learned_data.json
 plugins/Quotes/quotes.json
 plugins/TaskScheduler/tasks.json
 Todo.txt
+plugins/MarkovLyrics/lyrics/
