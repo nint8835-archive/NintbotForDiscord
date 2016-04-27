@@ -74,17 +74,17 @@ class Bot(TokenClient):
         """
         await self.log_message(message)
         if message.channel.is_private or message.server.id not in self.config["blacklisted_servers"]:
-            await self.EventManager.dispatch_event(EventTypes.Message,
+            await self.EventManager.dispatch_event(EventTypes.MESSAGE_SENT,
                                                    message = message,
                                                    author = message.author,
                                                    channel = message.channel)
             if message.channel.is_private:
-                await self.EventManager.dispatch_event(EventTypes.PrivateMessage,
+                await self.EventManager.dispatch_event(EventTypes.PRIVATE_MESSAGE_SENT,
                                                        message = message,
                                                        author = message.author,
                                                        channel = message.channel)
             else:
-                await self.EventManager.dispatch_event(EventTypes.ChannelMessage,
+                await self.EventManager.dispatch_event(EventTypes.CHANNEL_MESSAGE_SENT,
                                                        message = message,
                                                        author = message.author,
                                                        channel = message.channel)
@@ -97,7 +97,7 @@ class Bot(TokenClient):
                     self.logger.warning("Failed to process arguments for message '{}' using shlex, falling back to\
                                          processing using spaces.".format(message.content))
                     args = command_str.split(" ")
-                await self.EventManager.dispatch_event(EventTypes.CommandSent,
+                await self.EventManager.dispatch_event(EventTypes.COMMAND_SENT,
                                                        command_args = args,
                                                        unsplit_args = command_str,
                                                        message = message,
@@ -110,19 +110,19 @@ class Bot(TokenClient):
         :param message: The message that was deleted
         """
         if message.channel.is_private or message.server.id not in self.config["blacklisted_servers"]:
-            await self.EventManager.dispatch_event(EventTypes.MessageDeleted,
+            await self.EventManager.dispatch_event(EventTypes.MESSAGE_DELETED,
                                                    message = message,
                                                    author = message.author,
                                                    channel = message.channel)
 
             if message.channel.is_private:
-                await self.EventManager.dispatch_event(EventTypes.PrivateMessageDeleted,
+                await self.EventManager.dispatch_event(EventTypes.PRIVATE_MESSAGE_DELETED,
                                                        message = message,
                                                        author = message.author,
                                                        channel = message.channel)
 
             else:
-                await self.EventManager.dispatch_event(EventTypes.ChannelMessageDeleted,
+                await self.EventManager.dispatch_event(EventTypes.CHANNEL_MESSAGE_DELETED,
                                                        message = message,
                                                        author = message.author,
                                                        channel = message.channel)
@@ -134,21 +134,21 @@ class Bot(TokenClient):
         :param after: The message after it was edited
         """
         if after.channel.is_private or after.server.id not in self.config["blacklisted_servers"]:
-            await self.EventManager.dispatch_event(EventTypes.MessageEdited,
+            await self.EventManager.dispatch_event(EventTypes.MESSAGE_EDITED,
                                                    message_before = before,
                                                    message_after = after,
                                                    author = after.author,
                                                    channel = after.channel)
 
             if after.channel.is_private:
-                await self.EventManager.dispatch_event(EventTypes.PrivateMessageEdited,
+                await self.EventManager.dispatch_event(EventTypes.PRIVATE_MESSAGE_EDITED,
                                                        message_before = before,
                                                        message_after = after,
                                                        author = after.author,
                                                        channel = after.channel)
 
             else:
-                await self.EventManager.dispatch_event(EventTypes.PrivateMessageEdited,
+                await self.EventManager.dispatch_event(EventTypes.PRIVATE_MESSAGE_EDITED,
                                                        message_before = before,
                                                        message_after = after,
                                                        author = after.author,
@@ -160,7 +160,7 @@ class Bot(TokenClient):
         :param channel: The channel that was deleted
         """
         if channel.is_private or channel.server.id not in self.config["blacklisted_servers"]:
-            await self.EventManager.dispatch_event(EventTypes.ChannelDeleted,
+            await self.EventManager.dispatch_event(EventTypes.CHANNEL_DELETED,
                                                    channel = channel,
                                                    server = channel.server)
 
@@ -171,11 +171,11 @@ class Bot(TokenClient):
         """
         if channel.is_private or channel.server.id not in self.config["blacklisted_servers"]:
             if not channel.is_private:
-                await self.EventManager.dispatch_event(EventTypes.ChannelCreated,
+                await self.EventManager.dispatch_event(EventTypes.CHANNEL_CREATED,
                                                        channel = channel,
                                                        server = channel.server)
             else:
-                await self.EventManager.dispatch_event(EventTypes.ChannelCreated,
+                await self.EventManager.dispatch_event(EventTypes.CHANNEL_CREATED,
                                                        channel = channel)
 
     async def on_channel_update(self, before: discord.Channel, after: discord.Channel):
@@ -185,7 +185,7 @@ class Bot(TokenClient):
         :param after: The channel after it was updated
         """
         if after.is_private or after.server.id not in self.config["blacklisted_servers"]:
-            await self.EventManager.dispatch_event(EventTypes.ChannelUpdated,
+            await self.EventManager.dispatch_event(EventTypes.CHANNEL_UPDATED,
                                                    channel_before = before,
                                                    channel_after = after,
                                                    server = after.server)
@@ -196,7 +196,7 @@ class Bot(TokenClient):
         :param member: The member that joined
         """
         if member.server.id not in self.config["blacklisted_servers"]:
-            await self.EventManager.dispatch_event(EventTypes.MemberJoined,
+            await self.EventManager.dispatch_event(EventTypes.MEMBER_JOINED,
                                                    member = member,
                                                    server = member.server)
 
@@ -206,7 +206,7 @@ class Bot(TokenClient):
         :param member: The member that left
         """
         if member.server.id not in self.config["blacklisted_servers"]:
-            await self.EventManager.dispatch_event(EventTypes.MemberLeft,
+            await self.EventManager.dispatch_event(EventTypes.MEMBER_LEFT,
                                                    member = member,
                                                    server = member.server)
 
@@ -217,7 +217,7 @@ class Bot(TokenClient):
         :param after: The member after the update
         """
         if after.server.id not in self.config["blacklisted_servers"]:
-            await self.EventManager.dispatch_event(EventTypes.MemberUpdated,
+            await self.EventManager.dispatch_event(EventTypes.MEMBER_UPDATED,
                                                    member_before = before,
                                                    member_after = after,
                                                    server = after.server)
@@ -228,7 +228,7 @@ class Bot(TokenClient):
         :param member: The member that was banned
         """
         if member.server.id not in self.config["blacklisted_servers"]:
-            await self.EventManager.dispatch_event(EventTypes.MemberBanned,
+            await self.EventManager.dispatch_event(EventTypes.MEMBER_BANNED,
                                                    member = member,
                                                    server = member.server)
 
@@ -239,7 +239,7 @@ class Bot(TokenClient):
         :param user: The user that was unbanned
         """
         if server.id not in self.config["blacklisted_servers"]:
-            await self.EventManager.dispatch_event(EventTypes.MemberUnbanned,
+            await self.EventManager.dispatch_event(EventTypes.MEMBER_UNBANNED,
                                                    server = server,
                                                    user = user)
 
@@ -250,7 +250,7 @@ class Bot(TokenClient):
         :param after: The member after the update
         """
         if after.server.id not in self.config["blacklisted_servers"]:
-            await self.EventManager.dispatch_event(EventTypes.MemberVoiceStateUpdated,
+            await self.EventManager.dispatch_event(EventTypes.MEMBER_VOICE_STATE_UPDATED,
                                                    member_before = before,
                                                    member_after = after)
 
@@ -262,7 +262,7 @@ class Bot(TokenClient):
         :param when: When the user started typing
         """
         if channel.is_private or channel.server.id not in self.config["blacklisted_servers"]:
-            await self.EventManager.dispatch_event(EventTypes.MemberTyping,
+            await self.EventManager.dispatch_event(EventTypes.MEMBER_TYPING,
                                                    channel = channel,
                                                    user = user,
                                                    when = when)
@@ -273,7 +273,7 @@ class Bot(TokenClient):
         :param server: The server that was joined
         """
         if server.id not in self.config["blacklisted_servers"]:
-            await self.EventManager.dispatch_event(EventTypes.ServerJoined,
+            await self.EventManager.dispatch_event(EventTypes.SERVER_JOINED,
                                                    server = server)
 
     async def on_server_remove(self, server: discord.Server):
@@ -282,7 +282,7 @@ class Bot(TokenClient):
         :param server: The server that was left
         """
         if server.id not in self.config["blacklisted_servers"]:
-            await self.EventManager.dispatch_event(EventTypes.ServerLeft,
+            await self.EventManager.dispatch_event(EventTypes.SERVER_LEFT,
                                                    server = server)
 
     async def on_server_update(self, before: discord.Server, after: discord.Server):
@@ -292,7 +292,7 @@ class Bot(TokenClient):
         :param after: The server after the update
         """
         if before.id not in self.config["blacklisted_servers"]:
-            await self.EventManager.dispatch_event(EventTypes.ServerUpdated,
+            await self.EventManager.dispatch_event(EventTypes.SERVER_UPDATED,
                                                    server_before = before,
                                                    server_after = after)
 
@@ -302,7 +302,7 @@ class Bot(TokenClient):
         :param server: The server that became available
         """
         if server.id not in self.config["blacklisted_servers"]:
-            await self.EventManager.dispatch_event(EventTypes.ServerAvailable,
+            await self.EventManager.dispatch_event(EventTypes.SERVER_AVAILABLE,
                                                    server = server)
 
     async def on_server_unavailable(self, server: discord.Server):
@@ -311,7 +311,7 @@ class Bot(TokenClient):
         :param server: The server that became unavailable
         """
         if server.id not in self.config["blacklisted_servers"]:
-            await self.EventManager.dispatch_event(EventTypes.ServerUnavailable,
+            await self.EventManager.dispatch_event(EventTypes.SERVER_UNAVAILABLE,
                                                    server = server)
 
     async def on_server_role_create(self, server: discord.Server, role: discord.Role):
@@ -321,7 +321,7 @@ class Bot(TokenClient):
         :param role: The role that was created
         """
         if server.id not in self.config["blacklisted_servers"]:
-            await self.EventManager.dispatch_event(EventTypes.ServerRoleCreated,
+            await self.EventManager.dispatch_event(EventTypes.SERVER_ROLE_CREATED,
                                                    server = server,
                                                    role = role)
 
@@ -332,7 +332,7 @@ class Bot(TokenClient):
         :param role: The role that was deleted
         """
         if server.id not in self.config["blacklisted_servers"]:
-            await self.EventManager.dispatch_event(EventTypes.ServerRoleDeleted,
+            await self.EventManager.dispatch_event(EventTypes.SERVER_ROLE_DELETED,
                                                    server = server,
                                                    role = role)
 
@@ -343,7 +343,7 @@ class Bot(TokenClient):
         :param after: The role after the update
         """
         if before.id not in self.config["blacklisted_servers"]:
-            await self.EventManager.dispatch_event(EventTypes.ServerRoleUpdated,
+            await self.EventManager.dispatch_event(EventTypes.SERVER_ROLE_UPDATED,
                                                    role_before = before,
                                                    role_after = after,
                                                    server = [server for server in self.servers if after in server.roles][0])
@@ -352,7 +352,7 @@ class Bot(TokenClient):
         """
         Passes ready events to the EventManager
         """
-        await self.EventManager.dispatch_event(EventTypes.OnReady)
+        await self.EventManager.dispatch_event(EventTypes.CLIENT_READY)
 
     async def log_message(self, message: discord.Message):
         """

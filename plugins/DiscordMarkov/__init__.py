@@ -22,7 +22,7 @@ class Plugin(BasePlugin):
         super(Plugin, self).__init__(bot_instance, plugin_data, folder)
         self.cleanstrings_permission_group = create_match_any_permission_group([ManageMessages(), Owner(self.bot)])
         logging.getLogger("requests.packages.urllib3.connectionpool").setLevel(logging.ERROR)
-        self.bot.register_handler(EventTypes.Message, self.on_message, self)
+        self.bot.register_handler(EventTypes.MESSAGE_SENT, self.on_message, self)
         self.bot.CommandRegistry.register_command("wisdom",
                                                   "Generates wisdom using markov chains.",
                                                   Permission(),

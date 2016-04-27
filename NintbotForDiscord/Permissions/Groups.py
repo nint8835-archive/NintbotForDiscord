@@ -1,13 +1,15 @@
+from .General import ManageServer, ManageRoles, ManageChannels, KickMembers, BanMembers, CreateInstantInvite
+from .Text import ReadMessages, SendTTSMessages, ManageMessages, EmbedLinks, AttachFiles, ReadMessageHistory, \
+    MentionEveryone, SendMessages
+from .Voice import Connect, Speak, MuteMembers, DeafenMembers, MoveMembers, UseVoiceActivity
 from .Permission import PermissionGroup
-from .General import *
-from .Text import *
-from .Voice import *
 
 __author__ = 'Riley Flynn (nint8835)'
 
 
 class All(PermissionGroup):
-    permissions = [ManageServer(),
+    """A permission group containing all permissions"""
+    permissions = {ManageServer(),
                    ManageRoles(),
                    ManageChannels(),
                    KickMembers(),
@@ -26,10 +28,11 @@ class All(PermissionGroup):
                    MuteMembers(),
                    DeafenMembers(),
                    MoveMembers(),
-                   UseVoiceActivity()]
+                   UseVoiceActivity()}
 
 
 class Default(PermissionGroup):
+    """A permission group containing permissions granted to the @everyone role on a freshly created Discord server"""
     permissions = [CreateInstantInvite(),
                    ReadMessages(),
                    SendMessages(),

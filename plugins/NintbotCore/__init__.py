@@ -51,7 +51,7 @@ class Plugin(BasePlugin):
         self.started_time = 0
         self.admin = create_match_any_permission_group([Owner(self.bot), ManageMessages()])
         self.superadmin = create_match_any_permission_group([Owner(self.bot), ManageServer()])
-        self.bot.register_handler(EventTypes.OnReady, self.on_ready, self)
+        self.bot.register_handler(EventTypes.CLIENT_READY, self.on_ready, self)
 
         self.bot.CommandRegistry.register_command("info",
                                                   "Gets general information about the bot.",

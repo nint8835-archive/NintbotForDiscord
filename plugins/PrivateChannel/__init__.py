@@ -24,8 +24,8 @@ class Plugin(BasePlugin):
                                                   plugin_data,
                                                   self.on_command)
         self.logger = logging.getLogger("Private Channels")
-        self.bot.register_handler(EventTypes.OnReady, self.on_ready, self)
-        self.bot.register_handler(EventTypes.ChannelDeleted, self.on_channel_deleted, self)
+        self.bot.register_handler(EventTypes.CLIENT_READY, self.on_ready, self)
+        self.bot.register_handler(EventTypes.CHANNEL_DELETED, self.on_channel_deleted, self)
         with open(os.path.join(folder, "config.json")) as f:
             self.config = json.load(f)
         with open(os.path.join(self.folder, "adjectives")) as f:

@@ -3,6 +3,7 @@ __author__ = 'Riley Flynn (nint8835)'
 
 
 class SelectionMode(Enum):
+    """An enum containing all of the possible selection modes"""
 
     VALUE_GREATER_THAN = ">"
     VALUE_LESS_THAN = "<"
