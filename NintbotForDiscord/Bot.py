@@ -200,7 +200,7 @@ class Bot(TokenClient):
                                                    member = member,
                                                    server = member.server)
 
-    async def on_member_left(self, member: discord.Member):
+    async def on_member_remove(self, member: discord.Member):
         """
         Passes member leaves to the EventManager
         :param member: The member that left
@@ -232,7 +232,7 @@ class Bot(TokenClient):
                                                    member = member,
                                                    server = member.server)
 
-    async def on_member_unbanned(self, server: discord.Server, user: discord.User):
+    async def on_member_unban(self, server: discord.Server, user: discord.User):
         """
         Passes member unbans to the EventManager
         :param server: The server that the user was unbanned from

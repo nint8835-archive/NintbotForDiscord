@@ -1,4 +1,5 @@
 from NintbotForDiscord.Enums import EventTypes
+from NintbotForDiscord.Permissions.General import ManageServer
 from NintbotForDiscord.Plugin import BasePlugin
 from NintbotForDiscord.Permissions import create_match_any_permission_group, Permission
 from NintbotForDiscord.Permissions.Special import Owner
@@ -49,6 +50,7 @@ class Plugin(BasePlugin):
         super(Plugin, self).__init__(bot_instance, plugin_data, folder)
         self.started_time = 0
         self.admin = create_match_any_permission_group([Owner(self.bot), ManageMessages()])
+        self.superadmin = create_match_any_permission_group([Owner(self.bot), ManageServer()])
         self.bot.register_handler(EventTypes.OnReady, self.on_ready, self)
 
         self.bot.CommandRegistry.register_command("info",
@@ -113,7 +115,7 @@ class Plugin(BasePlugin):
                                                   self.command_invitelink)
         self.bot.CommandRegistry.register_command("server",
                                                   "Gets information for the server.",
-                                                  Permission(),
+                                                  self.superadmin,
                                                   plugin_data,
                                                   self.command_server)
         self.bot.CommandRegistry.register_command("resetgame",
@@ -121,6 +123,11 @@ class Plugin(BasePlugin):
                                                   Owner(self.bot),
                                                   plugin_data,
                                                   self.command_resetgame)
+        self.bot.CommandRegistry.register_command("users",
+                                                  "Gets the total user count for the server.",
+                                                  Permission(),
+                                                  plugin_data,
+                                                  self.command_users)
 
         with open(os.path.join(folder, "config.json")) as f:
             self.config = json.load(f)
@@ -312,3 +319,7 @@ class Plugin(BasePlugin):
         self.bot.Scheduler.add_task(GameUpdateScheduledTask("Nintbot V{}".format(self.bot.VERSION), self.bot, 10),
                                     self.plugin_data)
         self.started_time = time.time()
+
+    async def command_users(self, args):
+        if not args["channel"].is_private:
+            await self.bot.send_message(args["channel"], "There are {} members in this server.".format(args["channel"].server.member_count))

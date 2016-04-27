@@ -10,3 +10,4 @@ plugins/Quotes/quotes.json
 plugins/TaskScheduler/tasks.json
 Todo.txt
 plugins/MarkovLyrics/lyrics/
+plugins/RSSFeed/feeds.json

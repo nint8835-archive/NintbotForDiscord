@@ -18,6 +18,7 @@ from NintbotForDiscord.Plugin import BasePlugin
 from NintbotForDiscord.Permissions import Permission, create_match_any_permission_group, create_permission_group
 from NintbotForDiscord.Permissions.Voice import MuteMembers
 from NintbotForDiscord.Permissions.Special import Owner
+from NintbotForDiscord.ScheduledTask import MessageScheduledTask
 
 __author__ = 'Riley Flynn (nint8835)'
 

@@ -46,7 +46,12 @@ class Plugin(BasePlugin):
                 except:
                     traceback.print_exc(5)
         elif len(args["command_args"]) == 2:
-            if args["command_args"][1] != "markov":
+            if args["command_args"][1] == "markov":
+                await self.bot.send_message(args["channel"], "\"{}\" {}".format(self.markov.generateString(),
+                                                                                random.choice(self.quotes.data)["author"]))
+            elif args["command_args"][1] == "tts":
+                await self.bot.send_message(args["channel"], "\n".join([random.choice(self.quotes.data)["msg"] for i in range(5)]), tts=True)
+            else:
                 quotes = [quote["msg"] for quote in self.quotes.data if quote["author"].count(args["command_args"][1]) >= 1]
                 message = ""
                 for quote in quotes:
@@ -59,9 +64,7 @@ class Plugin(BasePlugin):
                         message += "\n{}".format(quote)
                 if message != "":
                     await self.bot.send_message(args["channel"], message)
-            else:
-                await self.bot.send_message(args["channel"], "\"{}\" {}".format(self.markov.generateString(),
-                                                                                random.choice(self.quotes.data)["author"]))
+
         elif len(args["command_args"]) == 1:
             quote = random.choice(self.quotes.select(SelectionMode.ALL).rows)
             await self.bot.send_message(args["channel"], "\"{}\" {}".format(quote["msg"], quote["author"]))
