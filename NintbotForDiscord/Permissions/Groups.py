@@ -1,4 +1,5 @@
-from .General import ManageServer, ManageRoles, ManageChannels, KickMembers, BanMembers, CreateInstantInvite
+from .General import ManageServer, ManageRoles, ManageChannels, KickMembers, BanMembers, CreateInstantInvite, \
+    ManageNicknames, ChangeNicknames
 from .Text import ReadMessages, SendTTSMessages, ManageMessages, EmbedLinks, AttachFiles, ReadMessageHistory, \
     MentionEveryone, SendMessages
 from .Voice import Connect, Speak, MuteMembers, DeafenMembers, MoveMembers, UseVoiceActivity
@@ -28,7 +29,9 @@ class All(PermissionGroup):
                    MuteMembers(),
                    DeafenMembers(),
                    MoveMembers(),
-                   UseVoiceActivity()}
+                   UseVoiceActivity(),
+                   ChangeNicknames(),
+                   ManageNicknames()}
 
 
 class Default(PermissionGroup):

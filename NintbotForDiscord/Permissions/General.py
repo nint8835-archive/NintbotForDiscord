@@ -62,3 +62,23 @@ class CreateInstantInvite(Permission):
             return any([role.permissions.create_instant_invite for role in member.roles])
         except:
             return False
+
+
+# noinspection PyBroadException
+class ChangeNicknames(Permission):
+
+    def has_permission(self, member: Member) -> bool:
+        try:
+            return any([role.permissions.change_nicknames for role in member.roles])
+        except:
+            return False
+
+
+# noinspection PyBroadException
+class ManageNicknames(Permission):
+
+    def has_permission(self, member: Member) -> bool:
+        try:
+            return any([role.permissions.manage_nicknames for role in member.roles])
+        except:
+            return False
