@@ -5,8 +5,8 @@ import traceback
 from discord import Object
 
 from NintbotForDiscord.Permissions import create_match_any_permission_group
+from NintbotForDiscord.Permissions.General import ManageServer
 from NintbotForDiscord.Permissions.Special import Owner
-from NintbotForDiscord.Permissions.Text import ManageMessages
 from NintbotForDiscord.Plugin import BasePlugin
 from plugins.TaskScheduler.CustomTasks import ScheduledMessage, RepeatingScheduledMessage
 
@@ -33,7 +33,7 @@ class Plugin(BasePlugin):
 
         self.bot.CommandRegistry.register_command("task",
                                                   "Manages scheduled tasks.",
-                                                  create_match_any_permission_group([Owner(self.bot), ManageMessages()]),
+                                                  create_match_any_permission_group([Owner(self.bot), ManageServer()]),
                                                   plugin_data,
                                                   self.command_task)
 

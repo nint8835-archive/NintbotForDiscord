@@ -18,7 +18,6 @@ from NintbotForDiscord.Plugin import BasePlugin
 from NintbotForDiscord.Permissions import Permission, create_match_any_permission_group, create_permission_group
 from NintbotForDiscord.Permissions.Voice import MuteMembers
 from NintbotForDiscord.Permissions.Special import Owner
-from NintbotForDiscord.ScheduledTask import MessageScheduledTask
 
 __author__ = 'Riley Flynn (nint8835)'
 
@@ -329,7 +328,8 @@ class Plugin(BasePlugin):
 
     async def command_queue(self, args):
         self.text_channel = args["message"].channel
-        await self.bot.send_message(self.text_channel, ":information_source: There are {} songs currently in the queue.".format(self.queue.qsize()))
+        # noinspection PyProtectedMember
+        await self.bot.send_message(self.text_channel, "```{}```".format("\n".join([item["info"]["title"] for item in self.queue._queue])))
 
     async def command_volume(self, args):
         self.text_channel = args["message"].channel

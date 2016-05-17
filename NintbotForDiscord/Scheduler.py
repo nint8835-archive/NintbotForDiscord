@@ -41,4 +41,4 @@ class Scheduler:
         """
         for task in self.tasks[:]:
             if task["plugin"] == plugin_info:
-                self.tasks.remove(plugin_info)
+                self.tasks.remove(task)

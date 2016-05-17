@@ -11,3 +11,17 @@ class Owner(Permission):
 
     def has_permission(self, member: Member):
         return member.id == self.bot.config["owner_id"]
+
+
+# noinspection PyBroadException
+class Role(Permission):
+
+    def __init__(self, role_name: str):
+        self.role_name = role_name
+
+    def has_permission(self, member: Member) -> bool:
+
+        try:
+            return any([role.name == self.role_name for role in member.roles])
+        except:
+            return False

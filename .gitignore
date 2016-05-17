@@ -11,3 +11,5 @@ plugins/TaskScheduler/tasks.json
 Todo.txt
 plugins/MarkovLyrics/lyrics/
 plugins/RSSFeed/feeds.json
+plugins/Soundboard/files/
+plugins/Soundboard/files.json
