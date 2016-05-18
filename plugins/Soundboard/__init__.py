@@ -40,13 +40,12 @@ class Plugin(BasePlugin):
             file_key = find(lambda f: self.files[f]["command"] == args["command_args"][0], self.files)
             if self.voice is None:
                 try:
-                    if len(self.bot.voice_clients) >= 1:
-                        self.voice = self.bot.voice_clients[0]
-                    else:
-                        if args["author"].voice_channel is not None:
-                            self.voice = await self.bot.join_voice_channel(args["author"].voice_channel)
-                            player = self.voice.create_ffmpeg_player(os.path.join(self.folder, "files", file_key))
-                            player.start()
+                    if self.bot.is_voice_connected(args["channel"].server):
+                        self.voice = self.bot.voice_client_in(args["channel"].server)
+                    elif args["author"].voice_channel is not None:
+                        self.voice = await self.bot.join_voice_channel(args["author"].voice_channel)
+                        player = self.voice.create_ffmpeg_player(os.path.join(self.folder, "files", file_key))
+                        player.start()
                 except:
                     if args["author"].voice_channel is not None:
                         self.voice = await self.bot.join_voice_channel(args["author"].voice_channel)

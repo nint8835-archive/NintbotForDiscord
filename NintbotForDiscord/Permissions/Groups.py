@@ -1,5 +1,5 @@
 from .General import ManageServer, ManageRoles, ManageChannels, KickMembers, BanMembers, CreateInstantInvite, \
-    ManageNicknames, ChangeNicknames
+    ManageNicknames, ChangeNicknames, Administrator
 from .Text import ReadMessages, SendTTSMessages, ManageMessages, EmbedLinks, AttachFiles, ReadMessageHistory, \
     MentionEveryone, SendMessages
 from .Voice import Connect, Speak, MuteMembers, DeafenMembers, MoveMembers, UseVoiceActivity
@@ -9,8 +9,9 @@ __author__ = 'Riley Flynn (nint8835)'
 
 
 class All(PermissionGroup):
-    """A permission group containing all permissions"""
-    permissions = {ManageServer(),
+    """A permission group containing all non-custom permissions"""
+    permissions = {Administrator(),
+                   ManageServer(),
                    ManageRoles(),
                    ManageChannels(),
                    KickMembers(),

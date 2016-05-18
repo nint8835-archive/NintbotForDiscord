@@ -9,7 +9,7 @@ class Owner(Permission):
     def __init__(self, bot_instance):
         self.bot = bot_instance
 
-    def has_permission(self, member: Member):
+    def has_permission(self, member: Member) -> bool:
         return member.id == self.bot.config["owner_id"]
 
 
@@ -25,3 +25,12 @@ class Role(Permission):
             return any([role.name == self.role_name for role in member.roles])
         except:
             return False
+
+
+class Server(Permission):
+
+    def __init__(self, server_id: str):
+        self.server_id = server_id
+
+    def has_permission(self, member: Member) -> bool:
+        return member.server.id == self.server_id

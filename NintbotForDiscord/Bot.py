@@ -9,22 +9,20 @@ from .EventManager import EventManager
 from .PluginManager import PluginManager
 from .Enums import EventTypes
 from .CommandRegistry import CommandRegistry
-from .TokenClient import TokenClient
 from .Scheduler import Scheduler
 from . import __version__
 
 __author__ = 'Riley Flynn (nint8835)'
 
 
-class Bot(TokenClient):
-
+class Bot(discord.Client):
     def __init__(self, config: dict, loop: asyncio.BaseEventLoop = None):
         """
         Initializes a new NintbotForDiscord instance
         :param config: A dictionary object containing the bot's settings
         :param loop: The asyncio event loop to handle connection to Discord
         """
-        super(Bot, self).__init__(loop = loop)
+        super(Bot, self).__init__(loop=loop)
         self.VERSION = __version__
         self.config = config
         self.logger = logging.getLogger("NintbotForDiscord")
@@ -75,19 +73,19 @@ class Bot(TokenClient):
         await self.log_message(message)
         if message.channel.is_private or message.server.id not in self.config["blacklisted_servers"]:
             await self.EventManager.dispatch_event(EventTypes.MESSAGE_SENT,
-                                                   message = message,
-                                                   author = message.author,
-                                                   channel = message.channel)
+                                                   message=message,
+                                                   author=message.author,
+                                                   channel=message.channel)
             if message.channel.is_private:
                 await self.EventManager.dispatch_event(EventTypes.PRIVATE_MESSAGE_SENT,
-                                                       message = message,
-                                                       author = message.author,
-                                                       channel = message.channel)
+                                                       message=message,
+                                                       author=message.author,
+                                                       channel=message.channel)
             else:
                 await self.EventManager.dispatch_event(EventTypes.CHANNEL_MESSAGE_SENT,
-                                                       message = message,
-                                                       author = message.author,
-                                                       channel = message.channel)
+                                                       message=message,
+                                                       author=message.author,
+                                                       channel=message.channel)
 
             if message.content.startswith(self.config["command_prefix"]):
                 command_str = message.content.lstrip(self.config["command_prefix"])
@@ -98,11 +96,11 @@ class Bot(TokenClient):
                                          processing using spaces.".format(message.content))
                     args = command_str.split(" ")
                 await self.EventManager.dispatch_event(EventTypes.COMMAND_SENT,
-                                                       command_args = args,
-                                                       unsplit_args = command_str,
-                                                       message = message,
-                                                       author = message.author,
-                                                       channel = message.channel)
+                                                       command_args=args,
+                                                       unsplit_args=command_str,
+                                                       message=message,
+                                                       author=message.author,
+                                                       channel=message.channel)
 
     async def on_message_delete(self, message: discord.Message):
         """
@@ -111,21 +109,21 @@ class Bot(TokenClient):
         """
         if message.channel.is_private or message.server.id not in self.config["blacklisted_servers"]:
             await self.EventManager.dispatch_event(EventTypes.MESSAGE_DELETED,
-                                                   message = message,
-                                                   author = message.author,
-                                                   channel = message.channel)
+                                                   message=message,
+                                                   author=message.author,
+                                                   channel=message.channel)
 
             if message.channel.is_private:
                 await self.EventManager.dispatch_event(EventTypes.PRIVATE_MESSAGE_DELETED,
-                                                       message = message,
-                                                       author = message.author,
-                                                       channel = message.channel)
+                                                       message=message,
+                                                       author=message.author,
+                                                       channel=message.channel)
 
             else:
                 await self.EventManager.dispatch_event(EventTypes.CHANNEL_MESSAGE_DELETED,
-                                                       message = message,
-                                                       author = message.author,
-                                                       channel = message.channel)
+                                                       message=message,
+                                                       author=message.author,
+                                                       channel=message.channel)
 
     async def on_message_edit(self, before: discord.Message, after: discord.Message):
         """
@@ -135,24 +133,24 @@ class Bot(TokenClient):
         """
         if after.channel.is_private or after.server.id not in self.config["blacklisted_servers"]:
             await self.EventManager.dispatch_event(EventTypes.MESSAGE_EDITED,
-                                                   message_before = before,
-                                                   message_after = after,
-                                                   author = after.author,
-                                                   channel = after.channel)
+                                                   message_before=before,
+                                                   message_after=after,
+                                                   author=after.author,
+                                                   channel=after.channel)
 
             if after.channel.is_private:
                 await self.EventManager.dispatch_event(EventTypes.PRIVATE_MESSAGE_EDITED,
-                                                       message_before = before,
-                                                       message_after = after,
-                                                       author = after.author,
-                                                       channel = after.channel)
+                                                       message_before=before,
+                                                       message_after=after,
+                                                       author=after.author,
+                                                       channel=after.channel)
 
             else:
                 await self.EventManager.dispatch_event(EventTypes.PRIVATE_MESSAGE_EDITED,
-                                                       message_before = before,
-                                                       message_after = after,
-                                                       author = after.author,
-                                                       channel = after.channel)
+                                                       message_before=before,
+                                                       message_after=after,
+                                                       author=after.author,
+                                                       channel=after.channel)
 
     async def on_channel_delete(self, channel: discord.Channel):
         """
@@ -161,8 +159,8 @@ class Bot(TokenClient):
         """
         if channel.is_private or channel.server.id not in self.config["blacklisted_servers"]:
             await self.EventManager.dispatch_event(EventTypes.CHANNEL_DELETED,
-                                                   channel = channel,
-                                                   server = channel.server)
+                                                   channel=channel,
+                                                   server=channel.server)
 
     async def on_channel_create(self, channel: discord.Channel):
         """
@@ -172,11 +170,11 @@ class Bot(TokenClient):
         if channel.is_private or channel.server.id not in self.config["blacklisted_servers"]:
             if not channel.is_private:
                 await self.EventManager.dispatch_event(EventTypes.CHANNEL_CREATED,
-                                                       channel = channel,
-                                                       server = channel.server)
+                                                       channel=channel,
+                                                       server=channel.server)
             else:
                 await self.EventManager.dispatch_event(EventTypes.CHANNEL_CREATED,
-                                                       channel = channel)
+                                                       channel=channel)
 
     async def on_channel_update(self, before: discord.Channel, after: discord.Channel):
         """
@@ -186,9 +184,9 @@ class Bot(TokenClient):
         """
         if after.is_private or after.server.id not in self.config["blacklisted_servers"]:
             await self.EventManager.dispatch_event(EventTypes.CHANNEL_UPDATED,
-                                                   channel_before = before,
-                                                   channel_after = after,
-                                                   server = after.server)
+                                                   channel_before=before,
+                                                   channel_after=after,
+                                                   server=after.server)
 
     async def on_member_join(self, member: discord.Member):
         """
@@ -197,8 +195,8 @@ class Bot(TokenClient):
         """
         if member.server.id not in self.config["blacklisted_servers"]:
             await self.EventManager.dispatch_event(EventTypes.MEMBER_JOINED,
-                                                   member = member,
-                                                   server = member.server)
+                                                   member=member,
+                                                   server=member.server)
 
     async def on_member_remove(self, member: discord.Member):
         """
@@ -207,8 +205,8 @@ class Bot(TokenClient):
         """
         if member.server.id not in self.config["blacklisted_servers"]:
             await self.EventManager.dispatch_event(EventTypes.MEMBER_LEFT,
-                                                   member = member,
-                                                   server = member.server)
+                                                   member=member,
+                                                   server=member.server)
 
     async def on_member_update(self, before: discord.Member, after: discord.Member):
         """
@@ -218,9 +216,9 @@ class Bot(TokenClient):
         """
         if after.server.id not in self.config["blacklisted_servers"]:
             await self.EventManager.dispatch_event(EventTypes.MEMBER_UPDATED,
-                                                   member_before = before,
-                                                   member_after = after,
-                                                   server = after.server)
+                                                   member_before=before,
+                                                   member_after=after,
+                                                   server=after.server)
 
     async def on_member_ban(self, member: discord.Member):
         """
@@ -229,8 +227,8 @@ class Bot(TokenClient):
         """
         if member.server.id not in self.config["blacklisted_servers"]:
             await self.EventManager.dispatch_event(EventTypes.MEMBER_BANNED,
-                                                   member = member,
-                                                   server = member.server)
+                                                   member=member,
+                                                   server=member.server)
 
     async def on_member_unban(self, server: discord.Server, user: discord.User):
         """
@@ -240,8 +238,8 @@ class Bot(TokenClient):
         """
         if server.id not in self.config["blacklisted_servers"]:
             await self.EventManager.dispatch_event(EventTypes.MEMBER_UNBANNED,
-                                                   server = server,
-                                                   user = user)
+                                                   server=server,
+                                                   user=user)
 
     async def on_voice_state_update(self, before: discord.Member, after: discord.Member):
         """
@@ -251,8 +249,8 @@ class Bot(TokenClient):
         """
         if after.server.id not in self.config["blacklisted_servers"]:
             await self.EventManager.dispatch_event(EventTypes.MEMBER_VOICE_STATE_UPDATED,
-                                                   member_before = before,
-                                                   member_after = after)
+                                                   member_before=before,
+                                                   member_after=after)
 
     async def on_typing(self, channel: discord.Channel, user: discord.User, when: datetime.datetime):
         """
@@ -263,9 +261,9 @@ class Bot(TokenClient):
         """
         if channel.is_private or channel.server.id not in self.config["blacklisted_servers"]:
             await self.EventManager.dispatch_event(EventTypes.MEMBER_TYPING,
-                                                   channel = channel,
-                                                   user = user,
-                                                   when = when)
+                                                   channel=channel,
+                                                   user=user,
+                                                   when=when)
 
     async def on_server_join(self, server: discord.Server):
         """
@@ -274,7 +272,7 @@ class Bot(TokenClient):
         """
         if server.id not in self.config["blacklisted_servers"]:
             await self.EventManager.dispatch_event(EventTypes.SERVER_JOINED,
-                                                   server = server)
+                                                   server=server)
 
     async def on_server_remove(self, server: discord.Server):
         """
@@ -283,7 +281,7 @@ class Bot(TokenClient):
         """
         if server.id not in self.config["blacklisted_servers"]:
             await self.EventManager.dispatch_event(EventTypes.SERVER_LEFT,
-                                                   server = server)
+                                                   server=server)
 
     async def on_server_update(self, before: discord.Server, after: discord.Server):
         """
@@ -293,8 +291,8 @@ class Bot(TokenClient):
         """
         if before.id not in self.config["blacklisted_servers"]:
             await self.EventManager.dispatch_event(EventTypes.SERVER_UPDATED,
-                                                   server_before = before,
-                                                   server_after = after)
+                                                   server_before=before,
+                                                   server_after=after)
 
     async def on_server_available(self, server: discord.Server):
         """
@@ -303,7 +301,7 @@ class Bot(TokenClient):
         """
         if server.id not in self.config["blacklisted_servers"]:
             await self.EventManager.dispatch_event(EventTypes.SERVER_AVAILABLE,
-                                                   server = server)
+                                                   server=server)
 
     async def on_server_unavailable(self, server: discord.Server):
         """
@@ -312,7 +310,7 @@ class Bot(TokenClient):
         """
         if server.id not in self.config["blacklisted_servers"]:
             await self.EventManager.dispatch_event(EventTypes.SERVER_UNAVAILABLE,
-                                                   server = server)
+                                                   server=server)
 
     async def on_server_role_create(self, server: discord.Server, role: discord.Role):
         """
@@ -322,8 +320,8 @@ class Bot(TokenClient):
         """
         if server.id not in self.config["blacklisted_servers"]:
             await self.EventManager.dispatch_event(EventTypes.SERVER_ROLE_CREATED,
-                                                   server = server,
-                                                   role = role)
+                                                   server=server,
+                                                   role=role)
 
     async def on_server_role_delete(self, server: discord.Server, role: discord.Role):
         """
@@ -333,8 +331,8 @@ class Bot(TokenClient):
         """
         if server.id not in self.config["blacklisted_servers"]:
             await self.EventManager.dispatch_event(EventTypes.SERVER_ROLE_DELETED,
-                                                   server = server,
-                                                   role = role)
+                                                   server=server,
+                                                   role=role)
 
     async def on_server_role_update(self, before: discord.Role, after: discord.Role):
         """
@@ -344,9 +342,9 @@ class Bot(TokenClient):
         """
         if before.id not in self.config["blacklisted_servers"]:
             await self.EventManager.dispatch_event(EventTypes.SERVER_ROLE_UPDATED,
-                                                   role_before = before,
-                                                   role_after = after,
-                                                   server = [server for server in self.servers if after in server.roles][0])
+                                                   role_before=before,
+                                                   role_after=after,
+                                                   server=[server for server in self.servers if after in server.roles][0])
 
     async def on_ready(self):
         """

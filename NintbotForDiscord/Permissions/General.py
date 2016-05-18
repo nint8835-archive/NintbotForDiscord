@@ -7,7 +7,7 @@ __author__ = 'Riley Flynn (nint8835)'
 # noinspection PyBroadException
 class Administrator(Permission):
 
-    def has_permission(self, member: Member):
+    def has_permission(self, member: Member) -> bool:
         try:
             return any([role.permissions.administrator for role in member.roles])
         except:

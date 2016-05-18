@@ -2,6 +2,7 @@ import re
 
 from .Enums import SelectionMode
 from .Exceptions import SelectionReuseException
+from . import Database
 __author__ = 'Riley Flynn (nint8835)'
 
 
@@ -13,7 +14,7 @@ class DatabaseSelection:
     Upon modification the selection object becomes unusable and must be recreated by performing the selection again.
     """
 
-    def __init__(self, data: list, db):
+    def __init__(self, data: list, db: "Database.JSONDatabase"):
         """
         Creates a new instance of DatabaseSelection
         :param data: A list of rows from a db.
@@ -75,7 +76,7 @@ class DatabaseSelection:
         else:
             raise SelectionReuseException()
 
-    def select(self, mode: SelectionMode, key="", selection_var=""):
+    def select(self, mode: SelectionMode, key="", selection_var="") -> "DatabaseSelection":
         """
         Further refines this selection
         :param mode: The mode of selection used to refine the selection
