@@ -11,5 +11,6 @@ class SelectionMode(Enum):
     VALUE_GREATER_THAN_OR_EQUAL = ">="
     VALUE_LESS_THAN_OR_EQUAL = "<="
     VALUE_NOT_EQUAL = "!="
+    VALUE_IN = "IN"
     REGEX_MATCH = "RE_MATCH"
     ALL = "*"

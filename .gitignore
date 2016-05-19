@@ -13,3 +13,4 @@ plugins/MarkovLyrics/lyrics/
 plugins/RSSFeed/feeds.json
 plugins/Soundboard/files/
 plugins/Soundboard/files.json
+plugins/Jukebot/queue.json

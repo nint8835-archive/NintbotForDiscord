@@ -107,7 +107,10 @@ class DatabaseSelection:
                 regex = re.compile(selection_var)
                 return DatabaseSelection([row for row in self.rows if regex.match(row["key"])], self.db)
 
+            if mode == SelectionMode.VALUE_IN:
+                return DatabaseSelection([row for row in self.rows if selection_var in row[key]], self.db)
+
             if mode == SelectionMode.ALL:
-                return DatabaseSelection(self.rows, self)
+                return DatabaseSelection(self.rows, self.db)
         else:
             raise SelectionReuseException()

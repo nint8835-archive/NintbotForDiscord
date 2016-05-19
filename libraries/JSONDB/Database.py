@@ -48,6 +48,9 @@ class JSONDatabase:
         if mode == SelectionMode.VALUE_NOT_EQUAL:
             return DatabaseSelection([row for row in self.data if row[key] != selection_var], self)
 
+        if mode == SelectionMode.VALUE_IN:
+            return DatabaseSelection([row for row in self.data if selection_var in row[key]], self)
+
         if mode == SelectionMode.REGEX_MATCH:
             regex = re.compile(selection_var)
             return DatabaseSelection([row for row in self.data if regex.match(row[key])], self)

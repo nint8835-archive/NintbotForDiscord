@@ -76,12 +76,17 @@ class InWhitelistedServer(Permission):
             return False
 
 
+# noinspection PyProtectedMember,PyAttributeOutsideInit
 class Plugin(BasePlugin):
 
     def __init__(self, bot_instance, plugin_data, folder):
         super(Plugin, self).__init__(bot_instance, plugin_data, folder)
+        self.queue = asyncio.Queue()
         with open(os.path.join(folder, "config.json")) as f:
             self.config = json.load(f)
+        with open(os.path.join(folder, "queue.json")) as f:
+            for item in json.load(f):
+                self.bot.EventManager.loop.create_task(self.queue.put(item))
         self.admin = create_match_any_permission_group([Owner(self.bot), MuteMembers()])
         self.admin = create_permission_group([self.admin, InWhitelistedServer(self)])
 
@@ -142,7 +147,6 @@ class Plugin(BasePlugin):
                                                   self.command_ffmpegopts)
 
         load_opus(os.path.join(folder, "libopus"))
-        self.queue = asyncio.Queue()
         # self.text_channel = Channel()
         logging.getLogger("googleapiclient.discovery").setLevel(logging.ERROR)
         self._youtube = build("youtube", "v3", developerKey = self.config["youtube_api_key"])
@@ -154,6 +158,17 @@ class Plugin(BasePlugin):
 
     def toggle_next_song(self):
         self.bot.loop.call_soon_threadsafe(self.next_song_event.set)
+
+    def dump_queue(self):
+        try:
+            queue = []
+            for item in self.queue._queue:
+                queue.append(item)
+            print(json.dumps(queue))
+            with open(os.path.join(self.folder, "queue.json"), "w") as f:
+                json.dump(queue, f)
+        except:
+            traceback.print_exc(5)
 
     def custom_ffmpeg_player(self, filename, volume, playback_rate, *, use_avconv = False, pipe = False, options = None, after = None):
         command = 'ffmpeg' if not use_avconv else 'avconv'
@@ -196,19 +211,20 @@ class Plugin(BasePlugin):
         while not self.bot.is_closed:
             self.next_song_event.clear()
             self.skips = []
-            self.song = await self.queue.get()
             waiting_to_join = True
             while waiting_to_join:
                 try:
-                    waiting_to_join = not self.bot.voice.is_connected()
+                    waiting_to_join = not self.voice.is_connected()
                 except:
                     waiting_to_join = True
                 if waiting_to_join:
                     await asyncio.sleep(5)
+            self.song = await self.queue.get()
+            self.dump_queue()
             self.player = self.custom_ytdl_player(self.song["url"],
                                                   after=self.toggle_next_song)
             self.player.start()
-            await self.bot.send_message(self.text_channel, ":speaker: Now playing {}, requested by {}.".format(self.song["info"]["title"], self.song["requester"].name))
+            await self.bot.send_message(self.text_channel, ":speaker: Now playing {}, requested by {}.".format(self.song["info"]["title"], self.song["requester"]))
             if self.song["info"]["title"] == "Dropkick Murphys - Johnny I hardly knew ya":
                 await self.bot.send_message(self.text_channel, "HAROO HAROO HAROO HAROO HAROO HAROO HAROO HAROO HAROO HAROO HAROO HAROO HAROO HAROO")
             await self.next_song_event.wait()
@@ -223,10 +239,12 @@ class Plugin(BasePlugin):
                         stream_info_getter = self.bot.EventManager.loop.run_in_executor(None, get_stream_info, item)
                         stream_info = await stream_info_getter
                         if stream_info is not None:
-                            info = {"url": item, "info": stream_info, "requester": args["author"]}
+                            info = {"url": item, "info": stream_info, "requester": args["author"].name}
                             await self.queue.put(info)
                             await self.bot.send_message(args["message"].channel,
                                                              ":ballot_box_with_check: Song {} added to queue.".format(info["info"]["title"]))
+                            self.dump_queue()
+
                         else:
                             await self.bot.send_message(args["message"].channel,
                                                         ":no_entry_sign: Song from {} failed to be added to queue. Please use a different upload of the song.".format(item))
@@ -239,29 +257,32 @@ class Plugin(BasePlugin):
             await self.bot.voice.disconnect()
         except:
             pass
-        if len(args["command_args"]) == 1:
-            for channel in [i for i in args["message"].server.channels if i.type == ChannelType.voice]:
-                if args["author"] in channel.voice_members:
-                    await self.bot.join_voice_channel(channel)
-                    await self.bot.send_message(args["message"].channel,
-                                                     ":ballot_box_with_check: Joined voice channel \"{}\"".format(channel.name))
-        if len(args["command_args"]) > 1:
-            joined = False
-            for channel in [i for i in args["message"].server.channels if i.type == ChannelType.voice]:
-                if channel.name == args["command_args"][1]:
-                    await self.bot.join_voice_channel(channel)
-                    await self.bot.send_message(args["message"].channel,
-                                                     ":ballot_box_with_check: Joined voice channel \"{}\"".format(channel.name))
-                    joined = True
-                    break
+        if self.bot.is_voice_connected(args["channel"].server):
+            self.voice = self.bot.voice_client_in(args["channel"].server)
+        else:
+            if len(args["command_args"]) == 1:
+                for channel in [i for i in args["message"].server.channels if i.type == ChannelType.voice]:
+                    if args["author"] in channel.voice_members:
+                        await self.bot.join_voice_channel(channel)
+                        await self.bot.send_message(args["message"].channel,
+                                                         ":ballot_box_with_check: Joined voice channel \"{}\"".format(channel.name))
+            if len(args["command_args"]) > 1:
+                joined = False
+                for channel in [i for i in args["message"].server.channels if i.type == ChannelType.voice]:
+                    if channel.name == args["command_args"][1]:
+                        await self.bot.join_voice_channel(channel)
+                        await self.bot.send_message(args["message"].channel,
+                                                         ":ballot_box_with_check: Joined voice channel \"{}\"".format(channel.name))
+                        joined = True
+                        break
 
-            if not joined:
-                await self.bot.send_message(args["channel"], ":no_entry_sign: Channel not found.")
+                if not joined:
+                    await self.bot.send_message(args["channel"], ":no_entry_sign: Channel not found.")
 
     async def command_leavevoice(self, args):
         self.text_channel = args["message"].channel
         try:
-            await self.bot.voice.disconnect()
+            await self.voice.disconnect()
             await self.bot.send_message(self.text_channel, ":ballot_box_with_check: Disconnected from voice.")
         except:
             await self.bot.send_message(args["channel"], ":no_entry_sign: The bot is not in a voice channel.")
@@ -273,7 +294,7 @@ class Plugin(BasePlugin):
             self.player.stop()
             self.toggle_next_song()
 
-        elif args["author"] in self.bot.voice.channel.voice_members and args["author"] not in self.skips and self.config["voteskip_enabled"]:
+        elif args["author"] in self.voice.channel.voice_members and args["author"] not in self.skips and self.config["voteskip_enabled"]:
             self.skips.append(args["author"])
             await self.bot.send_message(self.text_channel, ":question: {} of the required {} users have voted to skip.".format(len(self.skips), int(math.ceil((len(self.bot.voice.channel.voice_members)-1)/2))))
             if len(self.skips) >= int(math.ceil((len(self.bot.voice.channel.voice_members)-1)/2)):
@@ -287,8 +308,9 @@ class Plugin(BasePlugin):
         stream_info_getter = self.bot.EventManager.loop.run_in_executor(None, get_stream_info, item)
         stream_info = await stream_info_getter
         if stream_info is not None:
-            info = {"url": item, "info": stream_info, "requester": args["author"]}
+            info = {"url": item, "info": stream_info, "requester": args["author"].name}
             await self.queue.put(info)
+            self.dump_queue()
             await self.bot.send_message(args["message"].channel,
                                         ":ballot_box_with_check: Song {} added to queue.".format(info["info"]["title"]))
         else:
@@ -316,10 +338,11 @@ class Plugin(BasePlugin):
                     stream_info_getter = self.bot.EventManager.loop.run_in_executor(None, get_stream_info, item)
                     stream_info = await stream_info_getter
                     if stream_info is not None:
-                        info = {"url": item, "info": stream_info, "requester": args["author"]}
+                        info = {"url": item, "info": stream_info, "requester": args["author"].name}
                         await self.queue.put(info)
                         await self.bot.send_message(args["message"].channel,
                                                     ":ballot_box_with_check: Song {} added to queue.".format(info["info"]["title"]))
+                        self.dump_queue()
                     else:
                         await self.bot.send_message(args["message"].channel,
                                                     ":no_entry_sign: Song from {} failed to be added to queue. Please use a different upload of the song.".format(item))
