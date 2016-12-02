@@ -1,5 +1,5 @@
 from NintbotForDiscord.Enums import EventTypes
-from NintbotForDiscord.Permissions.General import ManageServer
+from NintbotForDiscord.Permissions.General import ManageServer, ManageRoles, Administrator
 from NintbotForDiscord.Plugin import BasePlugin
 from NintbotForDiscord.Permissions import create_match_any_permission_group, Permission
 from NintbotForDiscord.Permissions.Special import Owner
@@ -13,6 +13,7 @@ import os
 import json
 import re
 import time
+import psutil
 
 from NintbotForDiscord.ScheduledTask import GameUpdateScheduledTask
 
@@ -21,7 +22,8 @@ __author__ = 'Riley Flynn (nint8835)'
 INFO_STRING = """```Nintbot version {}
 Developed by nint8835
 Currently connected to {} servers, with {} channels ({} text, {} voice) and {} users ({} of which are online).
-{} plugins currently installed.```"""
+{} plugins currently installed.
+The interpreter is currently using {}MB of ram.```"""
 
 USER_INFO_STRING = """```Username: {}
 ID: {}
@@ -45,12 +47,18 @@ Created at: {}
 ```"""
 
 
+def ram_usage_in_mb():
+    process = psutil.Process(os.getpid())
+    mem = process.memory_info()[0] / float(2 ** 20)
+    return mem
+
+
 class Plugin(BasePlugin):
     def __init__(self, bot_instance, plugin_data, folder):
         super(Plugin, self).__init__(bot_instance, plugin_data, folder)
         self.started_time = 0
-        self.admin = create_match_any_permission_group([Owner(self.bot), ManageMessages()])
-        self.superadmin = create_match_any_permission_group([Owner(self.bot), ManageServer()])
+        self.admin = create_match_any_permission_group([Owner(self.bot), ManageRoles()])
+        self.superadmin = create_match_any_permission_group([Owner(self.bot), Administrator()])
         self.bot.register_handler(EventTypes.CLIENT_READY, self.on_ready, self)
 
         self.bot.CommandRegistry.register_command("info",
@@ -93,6 +101,11 @@ class Plugin(BasePlugin):
                                                   Owner(self.bot),
                                                   plugin_data,
                                                   self.command_stop)
+        self.bot.CommandRegistry.register_command("servers",
+                                                  "Gets a list of all servers the bot is a part of.",
+                                                  Owner(self.bot),
+                                                  plugin_data,
+                                                  self.command_servers)
         self.bot.CommandRegistry.register_command("uptime",
                                                   "Displays the bot's uptime.",
                                                   Permission(),
@@ -193,7 +206,8 @@ class Plugin(BasePlugin):
                                                        len(self.get_all_voice_channels()),
                                                        len(self.get_all_users()),
                                                        len(self.get_all_online_users()),
-                                                       len(self.bot.PluginManager.plugins)))
+                                                       len(self.bot.PluginManager.plugins),
+                                                       ram_usage_in_mb()))
 
     async def command_debug(self, args):
         if self.config["enable_debug"] and Owner(self.bot).has_permission(args["author"]):
@@ -310,6 +324,12 @@ class Plugin(BasePlugin):
                                             args["channel"].server.owner.name,
                                             args["channel"].server.created_at
                                         ))
+
+    async def command_servers(self, args):
+        await self.bot.send_message(args["channel"],
+                                    "```{}```".format(
+                                        "\n".join([server.name for server in self.bot.servers])
+                                    ))
 
     async def command_resetgame(self, args):
         self.bot.Scheduler.add_task(GameUpdateScheduledTask("Nintbot V{}".format(self.bot.VERSION), self.bot, 10),

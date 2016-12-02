@@ -17,6 +17,7 @@ class Plugin(BasePlugin):
         self.songs = []
         self.chain = MarkovChain()
         self.title_chain = MarkovChain()
+        self.artist_chain = MarkovChain()
 
         self.bot.CommandRegistry.register_command("lyricchain",
                                                   "Generates text using markov chains of song lyrics.",
@@ -32,7 +33,7 @@ class Plugin(BasePlugin):
 
         self.bot.CommandRegistry.register_command("songlist",
                                                   "Gets a list of all songs the bot is basing it's knowledge off of",
-                                                  Permission(),
+                                                  Owner(self.bot),
                                                   plugin_data,
                                                   self.command_songlist)
 
@@ -41,7 +42,7 @@ class Plugin(BasePlugin):
     async def command_lyricchain(self, args):
         await self.bot.send_message(args["channel"], "\"{}\" -{} by {}".format(self.chain.generateString(),
                                                                                self.title_chain.generateString(),
-                                                                               random.choice(self.artists)))
+                                                                               self.artist_chain.generateString()))
 
     async def command_reloadlyrics(self, args):
         self.load_lyrics()
@@ -74,3 +75,4 @@ class Plugin(BasePlugin):
                 lyrics.append(f.read())
         self.chain.generateDatabase("\n".join(lyrics))
         self.title_chain.generateDatabase("\n".join(song_titles))
+        self.artist_chain.generateDatabase("\n".join(self.artists))

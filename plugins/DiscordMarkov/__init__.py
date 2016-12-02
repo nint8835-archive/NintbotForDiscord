@@ -5,6 +5,7 @@ import json
 import logging
 import asyncio
 import requests
+from discord import Channel
 
 from NintbotForDiscord.Enums import EventTypes
 from NintbotForDiscord.Plugin import BasePlugin
@@ -67,58 +68,59 @@ class Plugin(BasePlugin):
         self.save_strings()
 
     async def command_wisdom(self, args):
-        if len(args["command_args"]) == 1:
-            await self.bot.send_typing(args["channel"])
-            try:
-                message_string_task = self.bot.EventManager.loop.run_in_executor(None, self.chain.generateString)
-                message_string = await message_string_task
+        if self.cleanstrings_permission_group.has_permission(args["author"]) or args["channel"].is_private or args["channel"].server.id != "106813060513005568":
+            if len(args["command_args"]) == 1:
+                await self.bot.send_typing(args["channel"])
                 try:
-                    if message_string.count("\"") % 2 != 0 and message_string.count("\"") > 0:
-                        message_string += "\""
-                except ZeroDivisionError:
-                    pass
-
-                if message_string.count("(") - message_string.count(")") >0:
-                    message_string += ")"
-
-                if message_string.count(")") - message_string.count("(") >0:
-                    message_string = "(" + message_string
-
-                message_string = message_string.capitalize()
-                await self.bot.send_message(args["channel"], message_string)
-            except:
-                await self.bot.send_message(args["channel"], "```{}```".format(traceback.format_exc(2)))
-        elif len(args["command_args"]) >= 2:
-            await self.bot.send_typing(args["channel"])
-            try:
-                message_string = ""
-                count = 0
-                while len(message_string.split(" "))<=5 and count < 10:
-                    message_string_task = self.bot.EventManager.loop.run_in_executor(None, self.chain.generateStringWithSeed, " ".join(args["command_args"][1:]))
+                    message_string_task = self.bot.EventManager.loop.run_in_executor(None, self.chain.generateString)
                     message_string = await message_string_task
-                    count += 1
+                    try:
+                        if message_string.count("\"") % 2 != 0 and message_string.count("\"") > 0:
+                            message_string += "\""
+                    except ZeroDivisionError:
+                        pass
+
+                    if message_string.count("(") - message_string.count(")") >0:
+                        message_string += ")"
+
+                    if message_string.count(")") - message_string.count("(") >0:
+                        message_string = "(" + message_string
+
+                    message_string = message_string.capitalize()
+                    await self.bot.send_message(args["channel"], message_string)
+                except:
+                    await self.bot.send_message(args["channel"], "```{}```".format(traceback.format_exc(2)))
+            elif len(args["command_args"]) >= 2 and not args["command_args"][1].startswith(self.bot.config["command_prefix"]):
+                await self.bot.send_typing(args["channel"])
                 try:
-                    if message_string.count("\"") % 2 != 0 and message_string.count("\"") > 0:
-                        message_string += "\""
-                except ZeroDivisionError:
-                    pass
+                    message_string = ""
+                    count = 0
+                    while len(message_string.split(" "))<=5 and count < 10:
+                        message_string_task = self.bot.EventManager.loop.run_in_executor(None, self.chain.generateStringWithSeed, " ".join(args["command_args"][1:]))
+                        message_string = await message_string_task
+                        count += 1
+                    try:
+                        if message_string.count("\"") % 2 != 0 and message_string.count("\"") > 0:
+                            message_string += "\""
+                    except ZeroDivisionError:
+                        pass
 
-                if message_string.count("(") - message_string.count(")") >0:
-                    message_string += ")"
+                    if message_string.count("(") - message_string.count(")") >0:
+                        message_string += ")"
 
-                if message_string.count(")") - message_string.count("(") >0:
-                    message_string = "(" + message_string
+                    if message_string.count(")") - message_string.count("(") >0:
+                        message_string = "(" + message_string
 
-                await self.bot.send_message(args["channel"], message_string)
-            except pymarkovchain.StringContinuationImpossibleError:
-                await self.bot.send_message(args["channel"], "I don't know how to respond to that.")
-            except:
-                await self.bot.send_message(args["channel"], "```{}```".format(traceback.format_exc(2)))
+                    await self.bot.send_message(args["channel"], message_string)
+                except pymarkovchain.StringContinuationImpossibleError:
+                    await self.bot.send_message(args["channel"], "I don't know how to respond to that.")
+                except:
+                    await self.bot.send_message(args["channel"], "```{}```".format(traceback.format_exc(2)))
 
     async def command_cleanstrings(self, args):
         count = 0
         for item in self.strings[:]:
-            if item == "" or item.startswith("http") or item.startswith(self.bot.config["command_prefix"]) or item.count("its ok to accept urself nintbot") >= 1 or item.count("Nathanial is the") >= 1:
+            if item == "" or item.startswith("http") or item.startswith(self.bot.config["command_prefix"]) or item.count("its ok to accept urself nintbot") >= 1 or item.count("smoking hot boadatious babe with big tits and a fear of colin") >= 1:
                 count += 1
                 self.strings.remove(item)
 

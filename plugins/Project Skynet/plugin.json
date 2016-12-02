@@ -1,7 +1,0 @@
-{
-  "plugin_name": "Project Skynet",
-  "plugin_developer": "nint8835",
-  "plugin_version": "1.2.1",
-  "module_name": "ProjectSkynet",
-  "main_file": "__init__.py"
-}

@@ -82,3 +82,13 @@ class MentionEveryone(Permission):
             return any([role.permissions.mention_everyone for role in member.roles])
         except:
             return False
+
+
+# noinspection PyBroadException
+class UseExternalEmojis(Permission):
+
+    def has_permission(self, member: Member) -> bool:
+        try:
+            return any([role.permissions.external_emojis for role in member.roles])
+        except:
+            return True

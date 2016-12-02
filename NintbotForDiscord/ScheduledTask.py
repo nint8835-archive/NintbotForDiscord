@@ -3,6 +3,8 @@ import time
 import discord
 from discord.utils import find
 
+from . import Scheduler
+
 __author__ = 'Riley Flynn (nint8835)'
 
 
@@ -21,7 +23,7 @@ class ScheduledTask:
 
 class RepeatingScheduledTask(ScheduledTask):
 
-    def __init__(self, scheduler: "Scheduler", plugin_info: dict, delay: int = 30):
+    def __init__(self, scheduler: "Scheduler.Scheduler", plugin_info: dict, delay: int = 30):
         ScheduledTask.__init__(self, delay)
         self.scheduler = scheduler
         self.plugin_info = plugin_info
@@ -33,7 +35,7 @@ class RepeatingScheduledTask(ScheduledTask):
 
 class RepeatingScheduledTaskWrapper(RepeatingScheduledTask):
 
-    def __init__(self, task: ScheduledTask, plugin_info: dict, scheduler: "Scheduler"):
+    def __init__(self, task: ScheduledTask, plugin_info: dict, scheduler: "Scheduler.Scheduler"):
         RepeatingScheduledTask.__init__(self, scheduler, plugin_info, task.delay)
         self.task = task
         self.scheduler = scheduler
@@ -115,4 +117,4 @@ class GameUpdateScheduledTask(ScheduledTask):
         self.bot = bot
 
     async def execute_task(self):
-        await self.bot.change_status(game = discord.Game(name = self.game))
+        await self.bot.change_presence(game=discord.Game(name=self.game))
