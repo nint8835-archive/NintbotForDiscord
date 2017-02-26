@@ -217,7 +217,7 @@ class Plugin(BasePlugin):
         h, m = divmod(m, 60)
         return "{} hours, {} minutes, and {} seconds".format(h, m, s)
 
-    def custom_ffmpeg_player(self, filename, volume, playback_rate, *, use_avconv = False, pipe = False, options = None, after = None):
+    def custom_ffmpeg_player(self, filename, volume, playback_rate, *, use_avconv=False, pipe = False, options = None, after = None):
         command = 'ffmpeg' if not use_avconv else 'avconv'
         input_name = '-' if pipe else shlex.quote(filename)
         cmd = command + ' -i {} -f s16le -ar {} -ac {} {} -loglevel warning pipe:1'

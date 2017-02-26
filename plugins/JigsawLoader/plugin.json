@@ -1,0 +1,7 @@
+{
+  "plugin_name": "JigsawLoader",
+  "plugin_developer": "nint8835",
+  "plugin_version": "1.0",
+  "module_name": "JigsawLoader",
+  "main_file": "__init__.py"
+}

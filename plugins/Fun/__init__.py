@@ -29,8 +29,8 @@ class Plugin(BasePlugin):
 
     def __init__(self, bot_instance, plugin_data, folder):
         super(Plugin, self).__init__(bot_instance, plugin_data, folder)
-        self.praw = praw.Reddit(user_agent = "Fun plugin V{} for NintbotForDiscord - Developed by /u/nint8835".format(self.plugin_data["plugin_version"]))
-        self.praw.get_random_subreddit(True)
+        # self.praw = praw.Reddit(user_agent = "Fun plugin V{} for NintbotForDiscord - Developed by /u/nint8835".format(self.plugin_data["plugin_version"]))
+        # self.praw.get_random_subreddit(True)
         self.admin_perm = create_match_any_permission_group([ManageRoles(), Owner(self.bot)])
         self.bot.CommandRegistry.register_command("weather",
                                                   "Looks up the weather for a specified location on openweathermap.",
@@ -77,11 +77,11 @@ class Plugin(BasePlugin):
                                                   Permission(),
                                                   plugin_data,
                                                   self.command_topgames)
-        self.bot.CommandRegistry.register_command("reddit",
-                                                  "Posts a random link from a subreddit.",
-                                                  Permission(),
-                                                  plugin_data,
-                                                  self.command_reddit)
+        # self.bot.CommandRegistry.register_command("reddit",
+        #                                           "Posts a random link from a subreddit.",
+        #                                           Permission(),
+        #                                           plugin_data,
+        #                                           self.command_reddit)
 
         with open(os.path.join(folder, "config.json")) as f:
             self.config = json.load(f)
@@ -166,16 +166,16 @@ class Plugin(BasePlugin):
         sorted_games = sorted(games, key=itemgetter("count"), reverse=True)
         await self.bot.send_message(args["channel"], "```Top games:\n{}```".format("\n".join(["{} - {} users".format(i["game"], i["count"]) for i in sorted_games])))
 
-    async def command_reddit(self, args):
-        if len(args["command_args"]) == 2:
-            try:
-                submission = self.praw.get_random_submission(args["command_args"][1])
-                if (submission.over_18 and args["channel"].id in self.config["nsfw_channels"]) or not submission.over_18:
-                    if not submission.is_self:
-                        await self.bot.send_message(args["channel"], "{}\n{}".format(submission.title, submission.url.replace(".gifv", ".gif")))
-                    else:
-                        await self.bot.send_message(args["channel"], "{}\n{}".format(submission.title, submission.selftext))
-                else:
-                    await self.bot.send_message(args["channel"], ":no_entry_sign: This is not a NSFW channel. NSFW content is not available here.")
-            except:
-                traceback.print_exc(5)
+    # async def command_reddit(self, args):
+    #     if len(args["command_args"]) == 2:
+    #         try:
+    #             submission = self.praw.get_random_submission(args["command_args"][1])
+    #             if (submission.over_18 and args["channel"].id in self.config["nsfw_channels"]) or not submission.over_18:
+    #                 if not submission.is_self:
+    #                     await self.bot.send_message(args["channel"], "{}\n{}".format(submission.title, submission.url.replace(".gifv", ".gif")))
+    #                 else:
+    #                     await self.bot.send_message(args["channel"], "{}\n{}".format(submission.title, submission.selftext))
+    #             else:
+    #                 await self.bot.send_message(args["channel"], ":no_entry_sign: This is not a NSFW channel. NSFW content is not available here.")
+    #         except:
+    #             traceback.print_exc(5)

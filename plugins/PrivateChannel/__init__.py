@@ -67,7 +67,7 @@ class Plugin(BasePlugin):
                             self.logger.info("{} tried to create a channel, but the max channels has been reached.".format(args["author"].name))
                         else:
                             name = self.generate_name()
-                            channel = await self.bot.create_channel(args["message"].server, name, "voice")
+                            channel = await self.bot.create_channel(args["message"].server, name, type="voice")
                             role = await self.bot.create_role(args["message"].server, name = name)
                             self.channels.insert({"id": channel.id,
                                                   "server_id": args["message"].server.id,

@@ -14,3 +14,5 @@ plugins/RSSFeed/feeds.json
 plugins/Soundboard/files/
 plugins/Soundboard/files.json
 plugins/Jukebot/queue.json
+plugins/Jukebot/libopus.dll
+plugins/Soundboard/libopus.dll
