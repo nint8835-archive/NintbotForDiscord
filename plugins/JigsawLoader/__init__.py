@@ -3,6 +3,7 @@ import os
 import traceback
 
 from NintbotForDiscord.Permissions import Permission
+from NintbotForDiscord.Permissions.Special import Owner
 from jigsaw import PluginLoader
 
 from NintbotForDiscord.Plugin import BasePlugin
@@ -19,7 +20,7 @@ class Plugin(BasePlugin):
             self._logger.debug("Initializing Jigsaw...")
             self._jigsaw = PluginLoader(os.path.join(folder, os.pardir, os.pardir, "jigsaw_plugins"),
                                         plugin_class=NintbotPlugin)
-            self._logger.debug("Jigsaw initialized.") 
+            self._logger.debug("Jigsaw initialized.")
 
             self._logger.debug("Loading Jigsaw manifests...")
             self._jigsaw.load_manifests()
@@ -34,6 +35,12 @@ class Plugin(BasePlugin):
                                                       Permission(),
                                                       plugin_data,
                                                       self.command_jigsawplugins)
+
+            self.bot.CommandRegistry.register_command("reloadplugins",
+                                                      "Reloads all modern (jigsaw) plugins.",
+                                                      Owner(self.bot),
+                                                      plugin_data,
+                                                      self.command_reloadplugins)
 
         except:
             traceback.print_exc(5)
@@ -50,3 +57,7 @@ class Plugin(BasePlugin):
         message += "```"
 
         await self.bot.send_message(args["channel"], message)
+
+    async def command_reloadplugins(self, args):
+        self._jigsaw.reload_all_plugins(self.bot)
+        await self.bot.send_message(args["channel"], "Plugins reloaded")
