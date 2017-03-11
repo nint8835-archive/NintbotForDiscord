@@ -30,6 +30,10 @@ class Plugin(BasePlugin):
             self._jigsaw.load_plugins(bot_instance)
             self._logger.debug("Jigsaw plugins loaded.")
 
+            self._logger.debug("Enabling Jigsaw plugins...")
+            self._jigsaw.enable_all_plugins()
+            self._logger.debug("Jigsaw plugins enabled.")
+
             self.bot.CommandRegistry.register_command("jigsawplugins",
                                                       "Views the currently installed plugins.",
                                                       Permission(),
@@ -46,7 +50,7 @@ class Plugin(BasePlugin):
             traceback.print_exc(5)
 
     async def command_jigsawplugins(self, args):
-        message = "```"
+        message = "```\n"
 
         for plugin in self._jigsaw.get_all_plugins():
             message += f"{plugin['manifest']['name']}\n"

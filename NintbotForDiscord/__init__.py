@@ -1,2 +1,2 @@
 __author__ = 'Riley Flynn (nint8835)'
-__version__ = "10.23.2016.3"
+__version__ = "03.10.2017.1"

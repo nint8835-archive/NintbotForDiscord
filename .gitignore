@@ -17,3 +17,4 @@ plugins/Jukebot/queue.json
 plugins/Jukebot/libopus.dll
 plugins/Soundboard/libopus.dll
 jigsaw_plugins/TestPlugin/error.log
+jigsaw_plugins/DiscordMarkov/strings/

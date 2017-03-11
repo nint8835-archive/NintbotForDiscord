@@ -60,3 +60,8 @@ class EventManager:
 
         if event_type == EventTypes.COMMAND_SENT:
             await self._bot.CommandRegistry.handle_command(new_args["command_args"][0], new_args)
+
+    def remove_handlers(self, plugin: BasePlugin):
+        for handler in self._handlers:
+            if handler["plugin"] == plugin:
+                self._handlers.remove(handler)

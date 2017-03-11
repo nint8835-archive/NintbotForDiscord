@@ -1,3 +1,5 @@
+import logging
+
 from jigsaw import JigsawPlugin
 
 
@@ -14,3 +16,5 @@ class NintbotPlugin(JigsawPlugin):
             "module_name": self.manifest.get("module_name", self.manifest.get("name", "Unnamed Plugin")),
             "main_file": self.manifest.get("main_path", "__init__.py")
         }
+
+        self.logger = logging.getLogger(self.plugin_info["plugin_name"])
