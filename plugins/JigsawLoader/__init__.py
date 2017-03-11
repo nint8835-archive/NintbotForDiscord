@@ -4,9 +4,9 @@ import traceback
 
 from NintbotForDiscord.Permissions import Permission
 from NintbotForDiscord.Permissions.Special import Owner
-from jigsaw import PluginLoader
-
 from NintbotForDiscord.Plugin import BasePlugin
+
+from jigsaw import PluginLoader
 from plugins.JigsawLoader.NintbotPlugin import NintbotPlugin
 
 
@@ -18,7 +18,7 @@ class Plugin(BasePlugin):
             self._logger = logging.getLogger("JigsawLoader")
 
             self._logger.debug("Initializing Jigsaw...")
-            self._jigsaw = PluginLoader(os.path.join(folder, os.pardir, os.pardir, "jigsaw_plugins"),
+            self._jigsaw = PluginLoader(os.path.abspath(os.path.join(folder, os.pardir, os.pardir, "jigsaw_plugins")),
                                         plugin_class=NintbotPlugin)
             self._logger.debug("Jigsaw initialized.")
 
