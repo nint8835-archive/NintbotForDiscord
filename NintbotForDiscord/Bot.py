@@ -41,7 +41,7 @@ class Bot(discord.Client):
         self.logger.debug("Creating PluginManager...")
         self.PluginManager = PluginManager(self)
         self.logger.debug("Done.")
-        self.logger.debug("Creating CommadRegistry...")
+        self.logger.debug("Creating CommandRegistry...")
         self.CommandRegistry = CommandRegistry(self)
         self.logger.debug("Done")
         self.logger.debug("Creating Scheduled...")
