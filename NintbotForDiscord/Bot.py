@@ -357,4 +357,7 @@ class Bot(discord.Client):
         Logs incoming messages to the console
         :param message: The message to log
         """
-        self.logger.info("{} ({}): {}".format(message.author.name, message.author.id, message.content))
+        self.logger.info("{} ({}) -> ({}): {}".format(message.author.name,
+                                                      message.author.id,
+                                                      message.channel.id,
+                                                      message.content))
