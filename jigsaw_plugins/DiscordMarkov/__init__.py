@@ -12,12 +12,17 @@ from plugins.JigsawLoader import NintbotPlugin
 
 
 class DiscordMarkov(NintbotPlugin):
-
     def __init__(self, manifest, bot_instance):
         super().__init__(manifest, bot_instance)
         self.enabled = True
         self.strings = []
         self.string_path = os.path.abspath(os.path.join(self.manifest["path"], "strings"))
+
+        self.register_command("newwisdom",
+                              "Generates wisdom using the new and improved markov chains.",
+                              self.command_new_wisdom)
+
+        self.register_handler(EventTypes.MESSAGE_SENT, self.on_message)
 
     def load_strings(self):
         self.logger.debug("Loading strings...")
@@ -48,6 +53,7 @@ class DiscordMarkov(NintbotPlugin):
 
     def enable(self):
         self.logger.info(f"Enabling DiscordMarkov v{self.manifest['version']}")
+        super(DiscordMarkov, self).enable()
 
         if not os.path.isdir(self.string_path):
             self.logger.debug("Strings directory does not exist, creating now.")
@@ -58,42 +64,23 @@ class DiscordMarkov(NintbotPlugin):
         self.bot.EventManager.loop.create_task(self.regen_chain_task())
         self.logger.debug("Task started.")
 
-        self.logger.debug("Registering handler...")
-        self.bot.register_handler(EventTypes.MESSAGE_SENT, self.on_message, self)
-        self.logger.debug("Handler registered.")
-
-        self.logger.debug("Registering commands...")
-        self.bot.CommandRegistry.register_command("newwisdom",
-                                                  "Generates wisdom using the new and improved markov chains.",
-                                                  Permission(),
-                                                  self.plugin_info,
-                                                  self.command_new_wisdom)
-        self.logger.debug("Commands registered.")
-
         self.enabled = True
 
         self.logger.info(f"Finished enabling DiscordMarkov v{self.manifest['version']}")
 
     def disable(self):
+        super(DiscordMarkov, self).disable()
         self.logger.info(f"Disabling DiscordMarkov v{self.manifest['version']}")
 
         self.logger.debug("Clearing strings list...")
         self.strings = []
         self.logger.debug("Strings list cleared.")
 
-        self.logger.debug("Removing handlers...")
-        self.bot.EventManager.remove_handlers(self)
-        self.logger.debug("Handlers removed.")
-
-        self.logger.debug("Unregistering commands...")
-        self.bot.CommandRegistry.unregister_all_commands_for_plugin(self.plugin_info)
-        self.logger.debug("Commands unregistered.")
-
         self.enabled = False
 
         self.logger.info(f"Finished disabling DiscordMarkov v{self.manifest['version']}")
 
-    def generate_message(self, start: str=""):
+    def generate_message(self, start: str = ""):
         message = ""
         count = 0
         # noinspection PyBroadException

@@ -5,7 +5,7 @@ import os
 
 __author__ = 'Riley Flynn (nint8835)'
 
-# filter = GlobbingFilter(exclude = [
+# module_filter = GlobbingFilter(exclude=[
 #     "pycallgraph.*",
 #     "asyncio.*",
 #     "importlib.*",
@@ -30,12 +30,12 @@ __author__ = 'Riley Flynn (nint8835)'
 # ])
 #
 # config = Config()
-# config.trace_filter = filter
+# config.trace_filter = module_filter
 #
 # out = GraphvizOutput()
 # out.tool = "sfdp"
 #
-# with PyCallGraph(output = out, config = config):
+# with PyCallGraph(output=out, config=config):
 #     launcher = FileBotLauncher(os.path.join("config.json"))
 
 launcher = FileBotLauncher(os.path.join("config.json"))

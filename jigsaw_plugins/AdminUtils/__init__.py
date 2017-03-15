@@ -6,27 +6,21 @@ from plugins.JigsawLoader import NintbotPlugin
 
 class AdminUtils(NintbotPlugin):
 
+    def __init__(self, manifest, bot_instance):
+        super().__init__(manifest, bot_instance)
+
+        self.register_command("send",
+                              "Sends a message to a specific channel.",
+                              self.command_send,
+                              Owner(self.bot))
+
     def enable(self):
+        super(AdminUtils, self).enable()
         self.logger.info(f"Enabling Admin Utils v{self.manifest['version']}")
 
-        self.logger.debug("Registering commands...")
-        self.bot.CommandRegistry.register_command("send",
-                                                  "Sends a message to a specific channel",
-                                                  Owner(self.bot),
-                                                  self.plugin_info,
-                                                  self.command_send)
-        self.logger.debug("Commands registered.")
-
-        self.logger.info(f"Finished enabling Admin Utils v{self.manifest['version']}")
-
     def disable(self):
+        super(AdminUtils, self).disable()
         self.logger.info(f"Disabling Admin Utils v{self.manifest['version']}")
-
-        self.logger.debug("Unregistering commands...")
-        self.bot.CommandRegistry.unregister_all_commands_for_plugin(self.plugin_info)
-        self.logger.debug("Commands unregistered.")
-
-        self.logger.info(f"Finished disabling Admin Utils v{self.manifest['version']}")
 
     async def command_send(self, args: dict):
         channel_id = args["command_args"][1]
