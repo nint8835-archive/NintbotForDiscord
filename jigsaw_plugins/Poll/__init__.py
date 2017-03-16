@@ -102,10 +102,7 @@ class Poll(NintbotPlugin):
 
         counts = []
         total = 0
-        print(pollmessage.reactions)
         for reaction in pollmessage.reactions:
-            print(reaction.emoji)
-            print(userpoll["options"])
             if reaction.emoji not in userpoll["options"]:
                 pass
             else:
@@ -114,10 +111,9 @@ class Poll(NintbotPlugin):
 
         sorted_counts = sorted(counts, key=itemgetter("count"), reverse=True)
 
-        resultsmessage = ""
+        resultsmessage = f"Response rankings for \"{userpoll['question']}\"\n"
 
         for index, option in enumerate(sorted_counts):
-            print(f"{index + 1}: {option['emote']} - {option['count']}({(option['count']/total) * 100}%)\n")
             resultsmessage += f"{index + 1}: {option['emote']} - {option['count']}({(option['count']/total) * 100}%)\n"
 
         await self.bot.send_message(args["channel"], resultsmessage)
