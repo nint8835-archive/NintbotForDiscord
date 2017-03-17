@@ -7,7 +7,7 @@ from plugins.JigsawLoader import NintbotPlugin
 class AdminUtils(NintbotPlugin):
 
     def __init__(self, manifest, bot_instance):
-        super().__init__(manifest, bot_instance)
+        super(AdminUtils, self).__init__(manifest, bot_instance)
 
         self.register_command("send",
                               "Sends a message to a specific channel.",

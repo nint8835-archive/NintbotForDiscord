@@ -18,3 +18,6 @@ plugins/Jukebot/libopus.dll
 plugins/Soundboard/libopus.dll
 jigsaw_plugins/TestPlugin/error.log
 jigsaw_plugins/DiscordMarkov/strings/
+jigsaw_plugins/FaceRecognizer/images/
+jigsaw_plugins/FaceRecognizer/encodings/
+jigsaw_plugins/FaceRecognizer/error.log
