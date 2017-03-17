@@ -41,7 +41,7 @@ class FaceRecognizer(NintbotPlugin):
     def generate_encoding(self, filename):
         self.logger.info(f"Generating encoding for {filename}, this may take a while.")
         image = face_recognition.load_image_file(os.path.join(self._image_path, filename))
-        encodings = face_recognition.face_encodings(image, num_jitters=5)
+        encodings = face_recognition.face_encodings(image, num_jitters=25)
         if len(encodings) != 1:
             self.logger.warning(f"{filename} contains an invalid number of faces ({len(encodings)}). It is suggested you delete this file.")
             return
@@ -80,7 +80,6 @@ class FaceRecognizer(NintbotPlugin):
         self.logger.debug("Encodings cleared.")
 
     async def on_message(self, args: dict):
-        self.logger.debug("I'm an event handler!")
         message = args["message"]  # type: discord.Message
         if len(message.attachments) != 1:
             return
@@ -104,10 +103,8 @@ class FaceRecognizer(NintbotPlugin):
         for known_encoding in self._known_encodings:
             for unknown in encodings:
                 results = face_recognition.compare_faces([known_encoding["encoding"]], unknown, tolerance=0.5)
-                self.logger.debug(f"{known_encoding['name']}, {str(results)}")
                 if results[0] and known_encoding["name"] not in seen:
                     seen.append(known_encoding["name"])
-        self.logger.debug(seen)
 
         if len(seen) != 0:
             await self.bot.send_message(args["channel"], f"I think I see: {', '.join(seen)}")
