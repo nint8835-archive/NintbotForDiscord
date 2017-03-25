@@ -1,7 +1,5 @@
 {
-  "plugin_name": "Custom Commands",
-  "plugin_developer": "nint8835",
-  "plugin_version": "1.2.3",
-  "module_name": "CustomCommands",
-  "main_file": "__init__.py"
+  "name": "Custom Commands",
+  "developer": "nint8835",
+  "version": "1.2.3"
 }

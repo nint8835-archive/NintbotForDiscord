@@ -1,7 +1,0 @@
-{
-  "plugin_name": "DiscordMarkov",
-  "plugin_developer": "nint8835",
-  "plugin_version": "2.7",
-  "module_name": "DiscordMarkov",
-  "main_file": "__init__.py"
-}

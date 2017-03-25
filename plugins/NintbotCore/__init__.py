@@ -54,8 +54,8 @@ def ram_usage_in_mb():
 
 
 class Plugin(BasePlugin):
-    def __init__(self, bot_instance, plugin_data, folder):
-        super(Plugin, self).__init__(bot_instance, plugin_data, folder)
+    def __init__(self, manifest, bot_instance):
+        super(Plugin, self).__init__(manifest, bot_instance)
         self.started_time = 0
         self.admin = create_match_any_permission_group([Owner(self.bot), ManageRoles()])
         self.superadmin = create_match_any_permission_group([Owner(self.bot), Administrator()])
@@ -64,85 +64,85 @@ class Plugin(BasePlugin):
         self.bot.CommandRegistry.register_command("info",
                                                   "Gets general information about the bot.",
                                                   Permission(),
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_info)
         self.bot.CommandRegistry.register_command("debug",
                                                   "Runs Python code to test features.",
                                                   Owner(self.bot),
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_debug)
         self.bot.CommandRegistry.register_command("purge",
                                                   "Purges all messages for a user.",
                                                   self.admin,
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_purge)
         self.bot.CommandRegistry.register_command("private_messages",
                                                   "Checks the private messages the bot has received.",
                                                   self.admin,
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_private_messages)
         self.bot.CommandRegistry.register_command("plugins",
                                                   "Views the currently installed plugins.",
                                                   Permission(),
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_plugins)
         self.bot.CommandRegistry.register_command("purgebot",
                                                   "Deletes all of the bot's messages from the channel.",
                                                   self.admin,
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_purgebot)
         self.bot.CommandRegistry.register_command("regexpurge",
                                                   "Deletes messages filtered using a regular expression.",
                                                   self.admin,
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_regexpurge)
         self.bot.CommandRegistry.register_command("stop",
                                                   "Stops the bot.",
                                                   Owner(self.bot),
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_stop)
         self.bot.CommandRegistry.register_command("servers",
                                                   "Gets a list of all servers the bot is a part of.",
                                                   Owner(self.bot),
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_servers)
         self.bot.CommandRegistry.register_command("uptime",
                                                   "Displays the bot's uptime.",
                                                   Permission(),
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_uptime)
         self.bot.CommandRegistry.register_command("commands",
                                                   "Displays what commands you have access to.",
                                                   Permission(),
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_commands)
         self.bot.CommandRegistry.register_command("userinfo",
                                                   "Displays info about a certain user.",
                                                   Permission(),
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_userinfo)
         self.bot.CommandRegistry.register_command("invitebot",
                                                   "Posts the invite link for the bot.",
                                                   Permission(),
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_invitelink)
         self.bot.CommandRegistry.register_command("server",
                                                   "Gets information for the server.",
                                                   self.superadmin,
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_server)
         self.bot.CommandRegistry.register_command("resetgame",
                                                   "Resets the currently played game to the default one.",
                                                   Owner(self.bot),
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_resetgame)
         self.bot.CommandRegistry.register_command("users",
                                                   "Gets the total user count for the server.",
                                                   Permission(),
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_users)
 
-        with open(os.path.join(folder, "config.json")) as f:
+        with open(os.path.join(self.manifest["path"], "config.json")) as f:
             self.config = json.load(f)
 
     def member_is_admin(self, member):
@@ -333,11 +333,11 @@ class Plugin(BasePlugin):
 
     async def command_resetgame(self, args):
         self.bot.Scheduler.add_task(GameUpdateScheduledTask("Nintbot V{}".format(self.bot.VERSION), self.bot, 10),
-                                    self.plugin_data)
+                                    self.plugin_info)
 
     async def on_ready(self, args):
         self.bot.Scheduler.add_task(GameUpdateScheduledTask("Nintbot V{}".format(self.bot.VERSION), self.bot, 10),
-                                    self.plugin_data)
+                                    self.plugin_info)
         self.started_time = time.time()
 
     async def command_users(self, args):

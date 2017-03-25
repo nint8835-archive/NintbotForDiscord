@@ -12,24 +12,24 @@ __author__ = 'Riley Flynn (nint8835)'
 
 class Plugin(BasePlugin):
 
-    def __init__(self, bot_instance, plugin_data, folder):
-        super(Plugin, self).__init__(bot_instance, plugin_data, folder)
+    def __init__(self, manifest, bot_instance):
+        super().__init__(manifest, bot_instance)
         self.manage_perm = create_match_any_permission_group([ManageMessages(), Owner(self.bot)])
-        self.commands = JSONDatabase(os.path.join(self.folder, "commands.json"))
+        self.commands = JSONDatabase(os.path.join(self.manifest["path"], "commands.json"))
         self.refresh_custom_registry()
 
     def refresh_custom_registry(self):
-        self.bot.CommandRegistry.unregister_all_commands_for_plugin(self.plugin_data)
+        self.bot.CommandRegistry.unregister_all_commands_for_plugin(self.plugin_info)
         self.bot.CommandRegistry.register_command("customcommand",
                                                   "Manage custom commands.",
                                                   self.manage_perm,
-                                                  self.plugin_data,
+                                                  self.plugin_info,
                                                   self.command_customcommand)
         for command in self.commands.select(SelectionMode.ALL).rows:
             self.bot.CommandRegistry.register_command(command["command"],
                                                       "A custom command from the Custom Commands plugin.",
                                                       Permission(),
-                                                      self.plugin_data,
+                                                      self.plugin_info,
                                                       self.command_handle_customcommand)
 
     async def command_customcommand(self, args):

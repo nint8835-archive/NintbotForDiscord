@@ -22,14 +22,14 @@ Amount by rank:
 
 class Plugin(BasePlugin):
 
-    def __init__(self, bot_instance, plugin_data, folder):
-        super(Plugin, self).__init__(bot_instance, plugin_data, folder)
+    def __init__(self, manifest, bot_instance):
+        super(Plugin, self).__init__(manifest, bot_instance)
         self.bot.CommandRegistry.register_command("osu",
                                                   "Gets the Osu stats for a user.",
                                                   Permission(),
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.on_command)
-        with open(os.path.join(folder, "config.json")) as f:
+        with open(os.path.join(self.manifest["path"], "config.json")) as f:
             self.config = json.load(f)
 
     async def on_command(self, args):

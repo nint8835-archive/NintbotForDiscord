@@ -13,13 +13,13 @@ from plugins.JigsawLoader.NintbotPlugin import NintbotPlugin
 
 class Plugin(BasePlugin):
 
-    def __init__(self, bot_instance, plugin_data, folder):
+    def __init__(self, manifest, bot_instance):
         try:
-            super(Plugin, self).__init__(bot_instance, plugin_data, folder)
+            super(Plugin, self).__init__(manifest, bot_instance)
             self._logger = logging.getLogger("JigsawLoader")
 
             self._logger.debug("Initializing Jigsaw...")
-            self._jigsaw = PluginLoader(os.path.abspath(os.path.join(folder, os.pardir, os.pardir, "jigsaw_plugins")),
+            self._jigsaw = PluginLoader(os.path.abspath(os.path.join(self.manifest["path"], os.pardir, os.pardir, "jigsaw_plugins")),
                                         plugin_class=NintbotPlugin)
             self._logger.debug("Jigsaw initialized.")
 
@@ -27,7 +27,7 @@ class Plugin(BasePlugin):
             self._jigsaw.load_manifests()
             self._logger.debug("Jigsaw manifests loaded.")
 
-            with open(os.path.join(folder, "plugins.json")) as f:
+            with open(os.path.join(self.manifest["path"], "plugins.json")) as f:
                 self._plugin_state = json.load(f)
 
             self._logger.debug("Loading Jigsaw plugins...")
@@ -43,38 +43,38 @@ class Plugin(BasePlugin):
             self.bot.CommandRegistry.register_command("jigsawplugins",
                                                       "Views the currently installed plugins.",
                                                       Permission(),
-                                                      plugin_data,
+                                                      self.plugin_info,
                                                       self.command_jigsawplugins)
 
             self.bot.CommandRegistry.register_command("reloadplugins",
                                                       "Reloads all modern (jigsaw) plugins.",
                                                       Owner(self.bot),
-                                                      plugin_data,
+                                                      self.plugin_info,
                                                       self.command_reloadplugins)
 
             self.bot.CommandRegistry.register_command("loadplugin",
                                                       "Loads the specified modern plugin.",
                                                       Owner(self.bot),
-                                                      plugin_data,
+                                                      self.plugin_info,
                                                       self.command_loadplugin)
 
             self.bot.CommandRegistry.register_command("reloadmanifests",
                                                       "Reloads all plugin manifests.",
                                                       Owner(self.bot),
-                                                      plugin_data,
+                                                      self.plugin_info,
                                                       self.command_reloadmanifests)
 
             self.bot.CommandRegistry.register_command("unloadplugin",
                                                       "Unloads the specified modern plugin.",
                                                       Owner(self.bot),
-                                                      plugin_data,
+                                                      self.plugin_info,
                                                       self.command_unloadplugin)
 
         except:
             traceback.print_exc(5)
 
     def _save_plugin_state(self):
-        with open(os.path.join(self.folder, "plugins.json"), "w") as f:
+        with open(os.path.join(self.manifest["path"], "plugins.json"), "w") as f:
             json.dump(self._plugin_state, f)
 
     async def command_jigsawplugins(self, args):

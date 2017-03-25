@@ -27,55 +27,55 @@ def get_index(list, key, value):
 # noinspection PyBroadException
 class Plugin(BasePlugin):
 
-    def __init__(self, bot_instance, plugin_data, folder):
-        super(Plugin, self).__init__(bot_instance, plugin_data, folder)
+    def __init__(self, manifest, bot_instance):
+        super(Plugin, self).__init__(manifest, bot_instance)
         # self.praw = praw.Reddit(user_agent = "Fun plugin V{} for NintbotForDiscord - Developed by /u/nint8835".format(self.plugin_data["plugin_version"]))
         # self.praw.get_random_subreddit(True)
         self.admin_perm = create_match_any_permission_group([ManageRoles(), Owner(self.bot)])
         self.bot.CommandRegistry.register_command("weather",
                                                   "Looks up the weather for a specified location on openweathermap.",
                                                   Permission(),
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_weather)
         self.bot.CommandRegistry.register_command("8ball",
                                                   "Asks the bot's built-in magic 8ball a question.",
                                                   Permission(),
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_8ball)
         self.bot.CommandRegistry.register_command("setavatar",
                                                   "Changes the bot's avatar.",
                                                   Owner(self.bot),
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_setavatar)
         self.bot.CommandRegistry.register_command("avatar",
                                                   "Gets the URL for a user's avatar.",
                                                   Permission(),
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_avatar)
         self.bot.CommandRegistry.register_command("decide",
                                                   "Makes the bot choose between two or more options, separated by pipes.",
                                                   Permission(),
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_decide)
         self.bot.CommandRegistry.register_command("role_color",
                                                   "Sets the color for a role to a hex color value.",
                                                   self.admin_perm,
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_role_color)
         self.bot.CommandRegistry.register_command("name",
                                                   "Changes the bot's username.",
                                                   Owner(self.bot),
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_name)
         self.bot.CommandRegistry.register_command("setgame",
                                                   "Sets the game the bot is displayed as playing.",
                                                   Owner(self.bot),
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_setgame)
         self.bot.CommandRegistry.register_command("topgames",
                                                   "Displays the games that are currently being played by the most users.",
                                                   Permission(),
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_topgames)
         # self.bot.CommandRegistry.register_command("reddit",
         #                                           "Posts a random link from a subreddit.",
@@ -83,7 +83,7 @@ class Plugin(BasePlugin):
         #                                           plugin_data,
         #                                           self.command_reddit)
 
-        with open(os.path.join(folder, "config.json")) as f:
+        with open(os.path.join(self.manifest["path"], "config.json")) as f:
             self.config = json.load(f)
 
     async def command_weather(self, args):

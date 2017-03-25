@@ -16,15 +16,15 @@ __author__ = 'Riley Flynn (nint8835)'
 
 class Plugin(BasePlugin):
 
-    def __init__(self, bot_instance, plugin_data, folder):
-        super(Plugin, self).__init__(bot_instance, plugin_data, folder)
+    def __init__(self, manifest, bot_instance):
+        super(Plugin, self).__init__(manifest, bot_instance)
         self.admin = create_match_any_permission_group([Owner(self.bot), ManageMessages()])
         self.bot.CommandRegistry.register_command("quote",
                                                   "View and manage quotes.",
                                                   Permission(),
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.on_command)
-        self.quotes = JSONDatabase(os.path.join(self.folder, "quotes.json"))
+        self.quotes = JSONDatabase(os.path.join(self.manifest["path"], "quotes.json"))
         self.markov = MarkovChain()
         self.generate_chain()
 

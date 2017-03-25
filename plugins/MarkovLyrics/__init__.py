@@ -11,8 +11,8 @@ __author__ = 'Riley Flynn (nint8835)'
 
 
 class Plugin(BasePlugin):
-    def __init__(self, bot_instance, plugin_data, folder):
-        super(Plugin, self).__init__(bot_instance, plugin_data, folder)
+    def __init__(self, manifest, bot_instance):
+        super(Plugin, self).__init__(manifest, bot_instance)
         self.artists = []
         self.songs = []
         self.chain = MarkovChain()
@@ -22,19 +22,19 @@ class Plugin(BasePlugin):
         self.bot.CommandRegistry.register_command("lyricchain",
                                                   "Generates text using markov chains of song lyrics.",
                                                   Permission(),
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_lyricchain)
 
         self.bot.CommandRegistry.register_command("reloadlyrics",
                                                   "Reloads the song lyrics.",
                                                   Owner(self.bot),
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_reloadlyrics)
 
         self.bot.CommandRegistry.register_command("songlist",
                                                   "Gets a list of all songs the bot is basing it's knowledge off of",
                                                   Owner(self.bot),
-                                                  plugin_data,
+                                                  self.plugin_info,
                                                   self.command_songlist)
 
         self.load_lyrics()
@@ -65,9 +65,9 @@ class Plugin(BasePlugin):
         self.songs = []
         lyrics = []
         song_titles = []
-        for item in os.listdir(os.path.join(self.folder, "lyrics")):
+        for item in os.listdir(os.path.join(self.manifest["path"], "lyrics")):
             self.songs.append(item)
-            with open(os.path.join(self.folder, "lyrics", item)) as f:
+            with open(os.path.join(self.manifest["path"], "lyrics", item)) as f:
                 song_titles.append(item.split("- ")[1])
                 artist = item.split(" -")[0]
                 if artist not in self.artists:

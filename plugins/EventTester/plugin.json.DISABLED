@@ -1,7 +1,0 @@
-{
-  "plugin_name": "Event Tester",
-  "plugin_developer": "nint8835",
-  "plugin_version": "1.1",
-  "module_name": "EventTester",
-  "main_file": "__init__.py"
-}

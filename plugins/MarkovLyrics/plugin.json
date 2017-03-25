@@ -1,7 +1,5 @@
 {
-  "plugin_name": "MarkovLyrics",
-  "plugin_developer": "nint8835",
-  "plugin_version": "1.3",
-  "module_name": "MarkovLyrics",
-  "main_file": "__init__.py"
+  "name": "MarkovLyrics",
+  "developer": "nint8835",
+  "version": "1.3"
 }

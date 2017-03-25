@@ -1,7 +1,5 @@
 {
-  "plugin_name": "Jukebot",
-  "plugin_developer": "nint8835",
-  "plugin_version": "1.36.2",
-  "module_name": "Jukebot",
-  "main_file": "__init__.py"
+  "name": "Jukebot",
+  "developer": "nint8835",
+  "version": "1.36.2"
 }

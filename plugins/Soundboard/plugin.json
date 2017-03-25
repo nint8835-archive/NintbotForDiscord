@@ -1,7 +1,5 @@
 {
-  "plugin_name": "Soundboard",
-  "plugin_developer": "nint8835",
-  "plugin_version": "1.2",
-  "module_name": "Soundboard",
-  "main_file": "__init__.py"
+  "name": "Soundboard",
+  "developer": "nint8835",
+  "version": "1.2"
 }
