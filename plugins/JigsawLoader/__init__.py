@@ -43,31 +43,31 @@ class Plugin(BasePlugin):
             self.bot.CommandRegistry.register_command("jigsawplugins",
                                                       "Views the currently installed plugins.",
                                                       Permission(),
-                                                      self.plugin_info,
+                                                      self,
                                                       self.command_jigsawplugins)
 
             self.bot.CommandRegistry.register_command("reloadplugins",
                                                       "Reloads all modern (jigsaw) plugins.",
                                                       Owner(self.bot),
-                                                      self.plugin_info,
+                                                      self,
                                                       self.command_reloadplugins)
 
             self.bot.CommandRegistry.register_command("loadplugin",
                                                       "Loads the specified modern plugin.",
                                                       Owner(self.bot),
-                                                      self.plugin_info,
+                                                      self,
                                                       self.command_loadplugin)
 
             self.bot.CommandRegistry.register_command("reloadmanifests",
                                                       "Reloads all plugin manifests.",
                                                       Owner(self.bot),
-                                                      self.plugin_info,
+                                                      self,
                                                       self.command_reloadmanifests)
 
             self.bot.CommandRegistry.register_command("unloadplugin",
                                                       "Unloads the specified modern plugin.",
                                                       Owner(self.bot),
-                                                      self.plugin_info,
+                                                      self,
                                                       self.command_unloadplugin)
 
         except:

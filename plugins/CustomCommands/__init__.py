@@ -19,17 +19,17 @@ class Plugin(BasePlugin):
         self.refresh_custom_registry()
 
     def refresh_custom_registry(self):
-        self.bot.CommandRegistry.unregister_all_commands_for_plugin(self.plugin_info)
+        self.bot.CommandRegistry.unregister_all_commands_for_plugin(self)
         self.bot.CommandRegistry.register_command("customcommand",
                                                   "Manage custom commands.",
                                                   self.manage_perm,
-                                                  self.plugin_info,
+                                                  self,
                                                   self.command_customcommand)
         for command in self.commands.select(SelectionMode.ALL).rows:
             self.bot.CommandRegistry.register_command(command["command"],
                                                       "A custom command from the Custom Commands plugin.",
                                                       Permission(),
-                                                      self.plugin_info,
+                                                      self,
                                                       self.command_handle_customcommand)
 
     async def command_customcommand(self, args):

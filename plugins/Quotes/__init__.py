@@ -22,7 +22,7 @@ class Plugin(BasePlugin):
         self.bot.CommandRegistry.register_command("quote",
                                                   "View and manage quotes.",
                                                   Permission(),
-                                                  self.plugin_info,
+                                                  self,
                                                   self.on_command)
         self.quotes = JSONDatabase(os.path.join(self.manifest["path"], "quotes.json"))
         self.markov = MarkovChain()

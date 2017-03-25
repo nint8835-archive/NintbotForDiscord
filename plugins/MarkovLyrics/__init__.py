@@ -22,19 +22,19 @@ class Plugin(BasePlugin):
         self.bot.CommandRegistry.register_command("lyricchain",
                                                   "Generates text using markov chains of song lyrics.",
                                                   Permission(),
-                                                  self.plugin_info,
+                                                  self,
                                                   self.command_lyricchain)
 
         self.bot.CommandRegistry.register_command("reloadlyrics",
                                                   "Reloads the song lyrics.",
                                                   Owner(self.bot),
-                                                  self.plugin_info,
+                                                  self,
                                                   self.command_reloadlyrics)
 
         self.bot.CommandRegistry.register_command("songlist",
                                                   "Gets a list of all songs the bot is basing it's knowledge off of",
                                                   Owner(self.bot),
-                                                  self.plugin_info,
+                                                  self,
                                                   self.command_songlist)
 
         self.load_lyrics()

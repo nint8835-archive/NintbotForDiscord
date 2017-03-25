@@ -26,13 +26,13 @@ class Plugin(BasePlugin):
             self.bot.CommandRegistry.register_command(self.files[file]["command"],
                                                       self.files[file]["description"],
                                                       Permission(),
-                                                      self.plugin_info,
+                                                      self,
                                                       self.command_soundboard)
 
         self.bot.CommandRegistry.register_command("reload_soundboard",
                                                   "Reloads the soundboard file list",
                                                   Owner(self.bot),
-                                                  self.plugin_info,
+                                                  self,
                                                   self.command_reload_soundboard)
 
     async def command_soundboard(self, args):
@@ -67,6 +67,6 @@ class Plugin(BasePlugin):
             self.bot.CommandRegistry.register_command(self.files[file]["command"],
                                                       self.files[file]["description"],
                                                       Permission(),
-                                                      self.plugin_info,
+                                                      self,
                                                       self.command_soundboard)
 

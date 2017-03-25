@@ -27,7 +27,7 @@ class Plugin(BasePlugin):
         self.bot.CommandRegistry.register_command("osu",
                                                   "Gets the Osu stats for a user.",
                                                   Permission(),
-                                                  self.plugin_info,
+                                                  self,
                                                   self.on_command)
         with open(os.path.join(self.manifest["path"], "config.json")) as f:
             self.config = json.load(f)

@@ -79,67 +79,67 @@ class Plugin(BasePlugin):
         self.bot.CommandRegistry.register_command("play",
                                                   "Adds a song to the song queue.",
                                                   InWhitelistedServer(self),
-                                                  self.plugin_info,
+                                                  self,
                                                   self.command_play)
         self.bot.CommandRegistry.register_command("joinvoice",
                                                   "Makes the bot connect to a voice channel.",
                                                   WhitelistedUser(self),
-                                                  self.plugin_info,
+                                                  self,
                                                   self.command_joinvoice)
         self.bot.CommandRegistry.register_command("leavevoice",
                                                   "Makes the bot disconnect from a voice channel",
                                                   WhitelistedUser(self),
-                                                  self.plugin_info,
+                                                  self,
                                                   self.command_leavevoice)
         self.bot.CommandRegistry.register_command("skip",
                                                   "Votes to skip the current song.",
                                                   InWhitelistedServer(self),
-                                                  self.plugin_info,
+                                                  self,
                                                   self.command_skip)
         self.bot.CommandRegistry.register_command("youtube",
                                                   "Searches your request on Youtube and adds the first result to the queue.",
                                                   InWhitelistedServer(self),
-                                                  self.plugin_info,
+                                                  self,
                                                   self.command_youtube)
         self.bot.CommandRegistry.register_command("soundcloud",
                                                   "Searches your request on Soundcloud and adds the first result to the queue.",
                                                   InWhitelistedServer(self),
-                                                  self.plugin_info,
+                                                  self,
                                                   self.command_soundcloud)
         self.bot.CommandRegistry.register_command("queue",
                                                   "Gets the current queue.",
                                                   InWhitelistedServer(self),
-                                                  self.plugin_info,
+                                                  self,
                                                   self.command_queue)
         self.bot.CommandRegistry.register_command("song",
                                                   "Gets the current song.",
                                                   InWhitelistedServer(self),
-                                                  self.plugin_info,
+                                                  self,
                                                   self.command_song)
         self.bot.CommandRegistry.register_command("volume",
                                                   "Changes the playback volume for the remaining songs in the queue.",
                                                   self.admin,
-                                                  self.plugin_info,
+                                                  self,
                                                   self.command_volume)
         self.bot.CommandRegistry.register_command("rate",
                                                   "Changes the sample rate of the remaining songs in the queue.",
                                                   self.admin,
-                                                  self.plugin_info,
+                                                  self,
                                                   self.command_rate)
         self.bot.CommandRegistry.register_command("voteskip",
                                                   "Toggles the ability to voteskip songs.",
                                                   self.admin,
-                                                  self.plugin_info,
+                                                  self,
                                                   self.command_voteskip)
         self.bot.CommandRegistry.register_command("ffmpegopts",
                                                   "Changes the FFMPEG filter options.",
                                                   self.admin,
-                                                  self.plugin_info,
+                                                  self,
                                                   self.command_ffmpegopts)
         self.bot.CommandRegistry.register_command("priority_play",
                                                   "Adds a song to the beginning of the queue and bypasses all restrictions.",
                                                   self.admin,
-                                                  self.plugin_info,
+                                                  self,
                                                   self.command_priority_play)
 
         load_opus(os.path.join(self.manifest["path"], "libopus"))
