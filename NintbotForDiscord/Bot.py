@@ -54,7 +54,7 @@ class Bot(discord.Client):
         logging.getLogger("discord").setLevel(logging.ERROR)
         logging.getLogger("websockets").setLevel(logging.ERROR)
         self.email = self.config["email"]
-        self.run(config["token"])
+        self.run(config["token"], bot=self.config["bot"])
 
     def register_handler(self, eventtype: EventTypes, handler, plugin: BasePlugin):
         """
