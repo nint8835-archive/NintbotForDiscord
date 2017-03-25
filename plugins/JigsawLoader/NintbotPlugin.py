@@ -1,9 +1,8 @@
 import logging
 
-import asyncio
-
 from NintbotForDiscord.Enums import EventTypes
 from NintbotForDiscord.Permissions import Permission
+from NintbotForDiscord import Bot
 from jigsaw import JigsawPlugin
 
 
@@ -12,7 +11,7 @@ class NintbotPlugin(JigsawPlugin):
     def __init__(self, manifest, bot_instance):
         super(NintbotPlugin, self).__init__(manifest)
 
-        self.bot = bot_instance
+        self.bot = bot_instance  # type: Bot.Bot
 
         self.plugin_info = {
             "plugin_name": self.manifest.get("name", "Unnamed Plugin"),
