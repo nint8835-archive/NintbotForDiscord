@@ -63,6 +63,7 @@ class FaceRecognizer(NintbotPlugin):
             self.logger.debug(f"Loading encoding from {file}.")
             self._known_encodings.append({
                 "name": file.split("-")[0],
+                "file": file,
                 "encoding": numpy.load(os.path.join(self._encoding_path, file))
             })
             self.logger.debug(f"Encoding loaded.")
@@ -104,7 +105,7 @@ class FaceRecognizer(NintbotPlugin):
             for unknown in encodings:
                 results = face_recognition.compare_faces([known_encoding["encoding"]], unknown, tolerance=0.5)
                 if results[0] and known_encoding["name"] not in seen:
-                    seen.append(known_encoding["name"])
+                    seen.append(f"{known_encoding['name']} (based on {known_encoding['file']})")
 
         if len(seen) != 0:
             await self.bot.send_message(args["channel"], f"I think I see: {', '.join(seen)}")
