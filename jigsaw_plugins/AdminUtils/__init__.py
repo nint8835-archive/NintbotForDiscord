@@ -1,10 +1,10 @@
 from discord import Object
 
 from NintbotForDiscord.Permissions.Special import Owner
-from plugins.JigsawLoader import NintbotPlugin
+from NintbotForDiscord.Plugin import BasePlugin
 
 
-class AdminUtils(NintbotPlugin):
+class AdminUtils(BasePlugin):
 
     def __init__(self, manifest, bot_instance):
         super(AdminUtils, self).__init__(manifest, bot_instance)

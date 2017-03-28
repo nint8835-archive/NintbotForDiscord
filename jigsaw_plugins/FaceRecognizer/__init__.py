@@ -1,17 +1,16 @@
 import os
+from io import BytesIO
 
 import aiohttp
 import discord
-from io import BytesIO
-
 import face_recognition
 import numpy
 
 from NintbotForDiscord.Enums import EventTypes
-from plugins.JigsawLoader import NintbotPlugin
+from NintbotForDiscord.Plugin import BasePlugin
 
 
-class FaceRecognizer(NintbotPlugin):
+class FaceRecognizer(BasePlugin):
 
     def __init__(self, manifest, bot_instance):
         super().__init__(manifest, bot_instance)

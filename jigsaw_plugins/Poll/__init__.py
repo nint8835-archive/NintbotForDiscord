@@ -8,14 +8,10 @@ from discord import Embed
 from discord import Object
 
 from NintbotForDiscord.Permissions import Permission
-
-from plugins.JigsawLoader import NintbotPlugin
-
+from NintbotForDiscord.Plugin import BasePlugin
 
 
-
-
-class Poll(NintbotPlugin):
+class Poll(BasePlugin):
 
     def __init__(self, manifest, bot_instance):
         super(Poll, self).__init__(manifest, bot_instance)

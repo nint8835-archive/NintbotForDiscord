@@ -1,17 +1,14 @@
+import asyncio
 import datetime
 import os
 
-import asyncio
-import traceback
-
-import markovify as markovify
+import markovify
 
 from NintbotForDiscord.Enums import EventTypes
-from NintbotForDiscord.Permissions import Permission
-from plugins.JigsawLoader import NintbotPlugin
+from NintbotForDiscord.Plugin import BasePlugin
 
 
-class DiscordMarkov(NintbotPlugin):
+class DiscordMarkov(BasePlugin):
     def __init__(self, manifest, bot_instance):
         super().__init__(manifest, bot_instance)
         self.enabled = True

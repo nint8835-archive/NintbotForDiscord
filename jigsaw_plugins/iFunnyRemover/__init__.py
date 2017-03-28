@@ -4,10 +4,10 @@ from io import BytesIO
 import aiohttp
 from PIL import Image
 
-from plugins.JigsawLoader import NintbotPlugin
+from NintbotForDiscord.Plugin import BasePlugin
 
 
-class IFunnyRemover(NintbotPlugin):
+class IFunnyRemover(BasePlugin):
 
     def __init__(self, manifest, bot_instance):
         super().__init__(manifest, bot_instance)
