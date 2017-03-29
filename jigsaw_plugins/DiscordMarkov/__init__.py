@@ -5,6 +5,7 @@ import os
 import markovify
 
 from NintbotForDiscord.Enums import EventTypes
+from NintbotForDiscord.Events import MessageSentEvent
 from NintbotForDiscord.Plugin import BasePlugin
 
 
@@ -95,7 +96,7 @@ class DiscordMarkov(BasePlugin):
             message = "I don't know how to respond."
         return message
 
-    async def on_message(self, args):
+    async def on_message(self, args: MessageSentEvent):
         self.strings.append(args["message"].content)
 
         date = datetime.datetime.today()
@@ -106,7 +107,7 @@ class DiscordMarkov(BasePlugin):
             write_mode = "w"
 
         with open(filename, write_mode, encoding="utf8") as f:
-            f.write(f"{args['message'].content}\n")
+            f.write(f"{args.content}\n")
 
     async def command_new_wisdom(self, args):
         if len(args["command_args"]) == 1:
