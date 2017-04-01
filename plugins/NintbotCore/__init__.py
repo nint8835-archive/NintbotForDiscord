@@ -1,4 +1,5 @@
 from NintbotForDiscord.Enums import EventTypes
+from NintbotForDiscord.Events import CommandSentEvent
 from NintbotForDiscord.Permissions.General import ManageServer, ManageRoles, Administrator
 from NintbotForDiscord.Plugin import BasePlugin
 from NintbotForDiscord.Permissions import create_match_any_permission_group, Permission
@@ -253,15 +254,16 @@ class Plugin(BasePlugin):
             except:
                 traceback.print_exc(5)
 
-    async def command_plugins(self, args):
-        # HORRIBLE CODE ALERT
-        # I'll clean it up later - Riley Flynn, ALWAYS
-        # It never gets done
-        await self.bot.send_message(args["channel"],
-                                    "```Installed plugins:\n{}```".format("\n".join(["{} version {} by {}".format(
-                                            plugin["info"]["plugin_name"], plugin["info"]["plugin_version"],
-                                            plugin["info"]["plugin_developer"]) for plugin in
-                                                                                     self.bot.PluginManager.plugins])))
+    async def command_plugins(self, args: CommandSentEvent):
+        message = "```\n"
+        for manifest in self.bot.PluginManager.get_all_manifests():
+            message += f"{manifest.get('name', 'Unnamed Plugin')}\n"
+            message += f"\tVersion: {manifest.get('version', 'Unspecified version')}\n"
+            message += f"\tDeveloper: {manifest.get('developer', 'Unspecified developer')}\n"
+            message += f"\tDependencies: {', '.join(manifest.get('dependencies', []))}\n"
+            message += f"\tPath: {manifest.get('path')}\n"
+        message += "```"
+        await self.bot.send_message(args.channel, message)
 
     async def command_purgebot(self, args):
         async for message in self.bot.logs_from(args["channel"], limit = 100):
