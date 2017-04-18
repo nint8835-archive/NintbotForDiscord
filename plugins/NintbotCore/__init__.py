@@ -213,7 +213,7 @@ class Plugin(BasePlugin):
     async def command_debug(self, args):
         if self.config["enable_debug"] and Owner(self.bot).has_permission(args["author"]):
             try:
-                results = eval(" ".join(args["unsplit_args"].split(" ")[1:]))
+                results = eval(args["content"].split(self.bot.config["command_prefix"]+"debug ")[1])
             except:
                 results = traceback.format_exc(5)
             await self.bot.send_message(args["channel"], "```python\n{}```".format(results))
