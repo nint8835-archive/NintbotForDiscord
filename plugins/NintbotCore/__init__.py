@@ -207,7 +207,7 @@ class Plugin(BasePlugin):
                                                        len(self.get_all_voice_channels()),
                                                        len(self.get_all_users()),
                                                        len(self.get_all_online_users()),
-                                                       len(self.bot.PluginManager.plugins),
+                                                       len(self.bot.PluginManager.get_all_manifests()),
                                                        ram_usage_in_mb()))
 
     async def command_debug(self, args):
