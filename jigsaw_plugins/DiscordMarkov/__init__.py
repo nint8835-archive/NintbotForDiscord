@@ -16,7 +16,7 @@ class DiscordMarkov(BasePlugin):
         self.strings = []
         self.string_path = os.path.abspath(os.path.join(self.manifest["path"], "strings"))
 
-        self.register_command("newwisdom",
+        self.register_command("wisdom",
                               "Generates wisdom using the new and improved markov chains.",
                               self.command_new_wisdom)
 
