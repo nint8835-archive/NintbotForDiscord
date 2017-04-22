@@ -98,6 +98,10 @@ class FaceRecognizer(BasePlugin):
 
         image = face_recognition.load_image_file(file)
         encodings = face_recognition.face_encodings(image, num_jitters=10)
+
+        if len(encodings) > 3:
+            return
+
         seen = []
 
         for known_encoding in self._known_encodings:
