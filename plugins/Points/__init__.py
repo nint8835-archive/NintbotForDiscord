@@ -50,14 +50,6 @@ class PointsPlugin(BasePlugin):
     def add_points(self, user: Union[discord.Member, discord.User], amount: int):
         self.set_points(user, self.get_points(user) + amount)
 
-    def add_point_percentage(self, user, percentage):
-        points = self.get_points(user)
-        add = math.ceil(points * percentage)
-        if add == 0:
-            self.add_points(user, 1)
-        else:
-            self.add_points(user, add)
-
     async def distribute_points_task(self):
         while not self.bot.is_closed and self.enabled:
             self.logger.debug("Distributing points...")
@@ -65,9 +57,9 @@ class PointsPlugin(BasePlugin):
                 for member in server.members:
                     if member.status != discord.Status.offline:
                         if server.owner == member:
-                            self.add_point_percentage(member, 0.05)
+                            self.add_points(member, 2)
                         else:
-                            self.add_point_percentage(member, 0.01)
+                            self.add_points(member, 1)
             self.logger.debug("Points distributed.")
             await asyncio.sleep(60)
 
