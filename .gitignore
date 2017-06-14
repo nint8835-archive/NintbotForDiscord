@@ -23,3 +23,4 @@ jigsaw_plugins/FaceRecognizer/encodings/
 jigsaw_plugins/FaceRecognizer/error.log
 jigsaw_plugins/iFunnyRemover/watermark_removed.png
 *.log
+plugins/Points/points.json
