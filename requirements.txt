@@ -1,0 +1,6 @@
+discord.py[voice]
+requests
+youtube_dl
+google-api-python-client
+pymarkovchain
+psutil
