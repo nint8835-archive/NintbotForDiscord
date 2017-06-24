@@ -189,6 +189,7 @@ class Plugin(BasePlugin):
 
 
     def toggle_next_song(self):
+        self.logger.debug("Setting next song event...")
         self.bot.loop.call_soon_threadsafe(self.next_song_event.set)
 
     def dump_queue(self):
@@ -256,7 +257,6 @@ class Plugin(BasePlugin):
     # noinspection PyBroadException
     async def song_queue(self):
         while not self.bot.is_closed:
-            self.next_song_event.clear()
             self.skips = []
             waiting_to_join = True
             while waiting_to_join:
@@ -266,14 +266,19 @@ class Plugin(BasePlugin):
                     waiting_to_join = True
                 if waiting_to_join:
                     await asyncio.sleep(5)
+            self.logger.debug("Waiting for new song...")
             self.song = await self.queue.get()
+            self.logger.debug("Got new song.")
             self.dump_queue()
             self.player = self.custom_ytdl_player(self.song["url"],
                                                   after=self.toggle_next_song)
+            self.next_song_event.clear()
             self.player.start()
             message = await self.bot.send_message(self.text_channel, ":speaker: Now playing {}, requested by {}.".format(self.song["info"]["title"], self.song["requester"]))
             self.messages.append(message)
+            self.logger.debug("Waiting for song to end...")
             await self.next_song_event.wait()
+            self.logger.debug("Song ended.")
 
     async def purge_messages(self):
         while not self.bot.is_closed:
@@ -380,7 +385,7 @@ class Plugin(BasePlugin):
                 self.player.stop()
             except:
                 pass
-            self.toggle_next_song()
+            # self.toggle_next_song()
 
         elif args["author"] in self.voice.channel.voice_members and args["author"] not in self.skips and self.config["voteskip_enabled"]:
             self.skips.append(args["author"])
@@ -390,7 +395,7 @@ class Plugin(BasePlugin):
                 message = await self.bot.send_message(self.text_channel, ":ok_hand: Vote passed.")
                 self.messages.append(message)
                 self.player.stop()
-                self.toggle_next_song()
+                # self.toggle_next_song()
 
     async def command_youtube(self, args):
         self.text_channel = args["message"].channel
