@@ -3,6 +3,7 @@ import os
 from typing import Union
 import asyncio
 import math
+import random
 
 from NintbotForDiscord.Plugin import BasePlugin
 from NintbotForDiscord.Events import CommandSentEvent
@@ -28,6 +29,14 @@ class PointsPlugin(BasePlugin):
             Permission(),
             self,
             self.command_points
+        )
+
+        self.bot.CommandRegistry.register_modern_command(
+            "^gamble ([1-9]\d*)$",
+            "Gambles your points.",
+            Permission(),
+            self,
+            self.command_gamble
         )
 
     def _set_points(self, id: str, amount: int):
@@ -74,3 +83,28 @@ class PointsPlugin(BasePlugin):
 
     async def command_points(self, args: CommandSentEvent):
         await self.bot.send_message(args.channel, f"You have {self.get_points(args.author)} :potato:")
+
+    async def command_gamble(self, args: CommandSentEvent):
+        amount = int(args.args)
+        self.logger.debug(amount)
+        if self.get_points(args.author) >= amount:
+            self.logger.debug(self.get_points(args.author))
+            self.add_points(args.author, amount * -1)
+            self.logger.debug(self.get_points(args.author))
+            value = random.randint(0, 100)
+            if value >= 97:
+                self.add_points(args.author, amount * 50)
+                await self.bot.send_message(args.channel, f"Jackpot! You won {amount * 50} points!")
+
+            if value < 97 and value >= 70:
+                multiplier = math.floor((100 - value) / float(4.0))
+                self.add_points(args.author, amount * multiplier)
+                await self.bot.send_message(args.channel, f"Not bad. You won {amount * multiplier} points.")
+
+            if value >= 50 and value < 70:
+                multiplier = 2
+                self.add_points(args.author, amount * multiplier)
+                await self.bot.send_message(args.channel, f"Not bad. You won {amount * multiplier} points.")
+
+            if value < 50:
+                await self.bot.send_message(args.channel, "Too bad! You lost your points.")
