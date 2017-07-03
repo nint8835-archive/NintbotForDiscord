@@ -40,7 +40,7 @@ class PointsPlugin(BasePlugin):
         )
 
         self.bot.CommandRegistry.register_modern_command(
-            "^give <@!\d{18}> ([1-9]\d*)$",
+            "^give <@!\d+> ([1-9]\d*)$",
             "Gives points to another user",
             Permission(),
             self,
