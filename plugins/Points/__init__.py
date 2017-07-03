@@ -39,6 +39,14 @@ class PointsPlugin(BasePlugin):
             self.command_gamble
         )
 
+        self.bot.CommandRegistry.register_modern_command(
+            "^give <@!\d{18}> ([1-9]\d*)$",
+            "Gives points to another user",
+            Permission(),
+            self,
+            self.command_give
+        )
+
     def _set_points(self, id: str, amount: int):
         self.points[id] = amount
         with open(os.path.join(self.manifest["path"], "points.json"), "w") as f:
@@ -108,3 +116,11 @@ class PointsPlugin(BasePlugin):
 
             if value < 50:
                 await self.bot.send_message(args.channel, "Too bad! You lost your points.")
+
+    async def command_give(self, args: CommandSentEvent):
+        amount = int(args.args)
+        user = args.message.mentions[0]
+        if self.get_points(args.author) >= amount:
+            self.add_points(args.author, amount * -1)
+            self.add_points(user, amount)
+            await self.bot.send_message(args.channel, f"{amount} points have been sent to {user.nick if user.nick else user.name}")
