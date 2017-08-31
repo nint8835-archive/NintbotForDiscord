@@ -90,7 +90,7 @@ class PointsPlugin(BasePlugin):
         self.enabled = False
 
     async def command_points(self, args: CommandSentEvent):
-        await self.bot.send_message(args.channel, f"You have {self.get_points(args.author)} :potato:")
+        await args.channel.send(f"You have {self.get_points(args.author)} :potato:")
 
     async def command_gamble(self, args: CommandSentEvent):
         amount = int(args.args)
@@ -102,20 +102,20 @@ class PointsPlugin(BasePlugin):
             value = random.randint(0, 100)
             if value >= 97:
                 self.add_points(args.author, amount * 50)
-                await self.bot.send_message(args.channel, f"Jackpot! You won {amount * 50} points!")
+                await args.channel.send(f"Jackpot! You won {amount * 50} points!")
 
             if value < 97 and value >= 70:
                 multiplier = math.floor((100 - value) / float(4.0))
                 self.add_points(args.author, amount * multiplier)
-                await self.bot.send_message(args.channel, f"Not bad. You won {amount * multiplier} points.")
+                await args.channel.send(f"Not bad. You won {amount * multiplier} points.")
 
             if value >= 50 and value < 70:
                 multiplier = 2
                 self.add_points(args.author, amount * multiplier)
-                await self.bot.send_message(args.channel, f"Not bad. You won {amount * multiplier} points.")
+                await args.channel.send(f"Not bad. You won {amount * multiplier} points.")
 
             if value < 50:
-                await self.bot.send_message(args.channel, "Too bad! You lost your points.")
+                await args.channel.send("Too bad! You lost your points.")
 
     async def command_give(self, args: CommandSentEvent):
         amount = int(args.args)
@@ -123,4 +123,4 @@ class PointsPlugin(BasePlugin):
         if self.get_points(args.author) >= amount:
             self.add_points(args.author, amount * -1)
             self.add_points(user, amount)
-            await self.bot.send_message(args.channel, f"{amount} points have been sent to {user.nick if user.nick else user.name}")
+            await args.channel.send(f"{amount} points have been sent to {user.nick if user.nick else user.name}")

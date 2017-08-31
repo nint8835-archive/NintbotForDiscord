@@ -111,7 +111,6 @@ class DiscordMarkov(BasePlugin):
 
     async def command_new_wisdom(self, args):
         if len(args["command_args"]) == 1:
-            await self.bot.send_message(args["channel"], self.generate_message())
+            await args.channel.send(self.generate_message())
         else:
-
-            await self.bot.send_message(args["channel"], self.generate_message(" ".join(args["command_args"][1:])))
+            await args.channel.send(self.generate_message(" ".join(args["command_args"][1:])))

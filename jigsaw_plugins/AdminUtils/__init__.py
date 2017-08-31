@@ -25,6 +25,6 @@ class AdminUtils(BasePlugin):
     async def command_send(self, args: dict):
         channel_id = args["command_args"][1]
         message = " ".join(args["command_args"][2:])
-        channel = Object(channel_id)
+        channel = Object(int(channel_id))
 
-        await self.bot.send_message(channel, message)
+        await channel.send(message)

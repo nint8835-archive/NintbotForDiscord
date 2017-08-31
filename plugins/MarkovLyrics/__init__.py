@@ -40,9 +40,9 @@ class Plugin(BasePlugin):
         self.load_lyrics()
 
     async def command_lyricchain(self, args):
-        await self.bot.send_message(args["channel"], "\"{}\" -{} by {}".format(self.chain.generateString(),
-                                                                               self.title_chain.generateString(),
-                                                                               self.artist_chain.generateString()))
+        await args.channel.send("\"{}\" -{} by {}".format(self.chain.generateString(),
+                                                          self.title_chain.generateString(),
+                                                          self.artist_chain.generateString()))
 
     async def command_reloadlyrics(self, args):
         self.load_lyrics()
@@ -51,14 +51,14 @@ class Plugin(BasePlugin):
         message = ""
         for song in self.songs:
             if len(message) + 2 + len(song) >= 2000:
-                await self.bot.send_message(args["channel"], message)
+                await args.channel.send(message)
                 message = song
             elif message == "":
                 message = song
             else:
                 message += "\n{}".format(song)
         if message != "":
-            await self.bot.send_message(args["channel"], message)
+            await args.channel.send(message)
 
     def load_lyrics(self):
         self.artists = []

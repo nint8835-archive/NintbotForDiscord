@@ -39,10 +39,10 @@ class Plugin(BasePlugin):
                 command = args["command_args"][2]
                 message = " ".join(args["command_args"][3:])
                 if len(self.bot.CommandRegistry.get_info_for_command(command)) != 0:
-                    await self.bot.send_message(args["channel"], ":no_entry_sign: That command is already registered in the command registry.")
+                    await args.channel.send(":no_entry_sign: That command is already registered in the command registry.")
                 else:
                     self.commands.insert({"command": command, "message": message})
-                    await self.bot.send_message(args["channel"], ":ballot_box_with_check: Command '{}' created.".format(command))
+                    await args.channel.send(":ballot_box_with_check: Command '{}' created.".format(command))
                     self.refresh_custom_registry()
 
             if args["command_args"][1] == "remove" and len(args["command_args"]) == 3:
@@ -51,11 +51,11 @@ class Plugin(BasePlugin):
                 if len(sel) >= 1:
                     sel.remove()
                     self.refresh_custom_registry()
-                    await self.bot.send_message(args["channel"], ":ballot_box_with_check: Command '{}' removed.".format(command))
+                    await args.channel.send(":ballot_box_with_check: Command '{}' removed.".format(command))
                 else:
-                    await self.bot.send_message(args["channel"], ":no_entry_sign: That command does not exist.")
+                    await args.channel.send(":no_entry_sign: That command does not exist.")
 
     async def command_handle_customcommand(self, args):
         sel = self.commands.select(SelectionMode.VALUE_EQUALS, "command", args["command_args"][0])
         if len(sel) == 1:
-            await self.bot.send_message(args["channel"], sel[0]["message"])
+            await args.channel.send(sel[0]["message"])
