@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 import os
+import traceback
 
 import markovify
 
@@ -35,7 +36,7 @@ class DiscordMarkov(BasePlugin):
         self.logger.debug("Strings loaded.")
 
     async def regen_chain_task(self):
-        while not self.bot.is_closed and self.enabled:
+        while not self.bot.is_closed() and self.enabled:
             self.logger.debug("Regenerating chain.")
             await self.async_make_chain()
             self.logger.debug("Chain regenerated.")
@@ -91,6 +92,7 @@ class DiscordMarkov(BasePlugin):
                     message = self.chain.make_sentence()
                     count += 1
         except:
+            traceback.print_exc(3)
             message = "I don't know how to respond."
         if message == "" or message is None:
             message = "I don't know how to respond."

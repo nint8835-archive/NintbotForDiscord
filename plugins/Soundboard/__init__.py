@@ -69,4 +69,3 @@ class Plugin(BasePlugin):
                                                       Permission(),
                                                       self,
                                                       self.command_soundboard)
-
